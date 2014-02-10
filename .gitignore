@@ -11,3 +11,11 @@
 *.lai
 *.la
 *.a
+
+# Executables
+main
+
+# Tex files
+*.aux
+*.log
+*.out
