@@ -2,12 +2,12 @@ CXX = g++
 WARNINGFLAGS = -pedantic -Wall
 CXXFLAGS = -std=c++11 -O2 $(WARNINGFLAGS)
 
-TARGETS = main
+TARGETS = clean mtKineticModel
 
 all: $(TARGETS)
 
-main: main.o
+mtKineticModel: main.o
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 clean: 
-	rm -f *.o main
+	rm -f *.o mtKineticModel

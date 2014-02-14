@@ -13,9 +13,13 @@
 *.a
 
 # Executables
+mtKineticModel
 main
 
 # Tex files
 *.aux
 *.log
 *.out
+
+# Data files
+*.csv

@@ -20,7 +20,7 @@ const float_T Duration = 10;         //duration in minutes
 const float_T Tau      = 1.0/4000.0; //time step in minutes
 
 // MT Parameters
-const unsigned MT_numb = 10; //# of MTs from one centrosome. 
+const unsigned MT_numb = 100; //# of MTs from one centrosome. 
 vec_T MT_Pos_M[MT_numb];
 vec_T MT_Pos_D[MT_numb];
 bool MT_Growing_M[MT_numb];
@@ -65,15 +65,13 @@ const float_T kbT    = .00414;   //pN mum
 const float_T D      = kbT/Eta2; //Diffusion Coefficient for centrosome motion. (mum^2/min)
 
 //  Starting Coordinates:
-const float_T startPsi = pi/2.0+pi/6.0;
-const float_T startX   = 15;
+const float_T startPsi = pi/2.0;//+pi/6.0;
+const float_T startX   = 0;
 //const float_T startX   = 0;
 const float_T startY   = 0;
 
 //  General Coordinate Initializations: 
 float_T psi;
-//vec_T springAnchorM;
-//vec_T springAnchorD;
 vec_T basePosM;
 vec_T basePosD;
 vec_T proNucPos;
@@ -108,7 +106,9 @@ const float_T regionProbabilities[numRegions] = {1};
 // File Parameters
 std::ofstream file;
 std::string fileName  = "";
-std::string fileOrder = "t,proNucPos,psi,MT_Pos_M,MT_Pos_D,force_M,force_D,force,torque_M,torque_D,torque";
+std::string fileDir   = "../data/";
+std::string fileOrder = "t,proNucPos,psi,MT_Pos_M,MT_Pos_D,force_M,force_D,\
+                         force,torque_M,torque_D,torque,basePosM,basePosD";
 //TODO: correct that ^
 
 

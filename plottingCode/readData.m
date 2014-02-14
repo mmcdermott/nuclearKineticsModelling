@@ -54,12 +54,11 @@ forceMag   = sqrt(sum(forceFull.^2,2));
 forceAng   = atan2(forceFull(:,2),forceFull(:,1));
 
 torqueData = DATA(:,end_D + 9);
-startContactM = end_D + 10;
-endContactM   = startContactM + mt_numb-1;
-startContactD = endContactM + 1;
-endContactD   = startContactD + mt_numb-1;
-MT_Contact_M = DATA(:,startContactM:endContactM);
-MT_Contact_D = DATA(:,startContactD:endContactD);
+
+startBasePosM = end_D + 10;
+endBasePosM   = startBasePosM + 1;
+startBasePosD = endBasePosM + 1;
+endBasePosD   = startBasePosD + 1;
 
 %plot force:
 subplot(2, 2, 2);
@@ -135,12 +134,7 @@ for i = 1 : step : length(DATA)
     torque_D = data(end_D + 8);
     torque   = data(end_D + 9);
     
-    startContactM = end_D + 10;
-    endContactM   = startContactM + mt_numb;
-    startContactD = endContactM + 1;
-    endContactD   = startContactD + mt_numb;
-    
-    startBasePosM = endContactD - 1;
+    startBasePosM = end_D + 10;
     endBasePosM   = startBasePosM + 1;
     startBasePosD = endBasePosM + 1;
     endBasePosD   = startBasePosD + 1;

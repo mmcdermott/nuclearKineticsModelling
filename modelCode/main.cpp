@@ -47,8 +47,8 @@ ostream& operator<<(ostream& out, const float_T (&rhs)[MT_numb]) {
 void writeData(const float_T t) {
   file << t <<","<< proNucPos <<","<< psi <<","<<  MT_Pos_M <<",";
   file << MT_Pos_D <<","<< force_M <<","<< force_D <<","<< force <<",";
-  file << torque_M <<","<< torque_D <<","<< torque <<","<< MT_Contact_M;
-  file <<","<< MT_Contact_D << "," << basePosM << "," << basePosD << endl;
+  file << torque_M <<","<< torque_D <<","<< torque <<","<< basePosM <<",";
+  file << basePosD << endl;
 }
 
 void writeFinalData() {
@@ -114,8 +114,8 @@ void updatePNPos() {
   // Base-pos obeys equation \eta_2 dx/dt = F + \xi,
   // where \xi is a random noise parameter on the order of \sqrt{2D \tau}. To
   // generate \xi, take a random number P from norm(0,1) and take 
-  // \sqrt{2DP\tau}. We don't know what \eta_2 or D is, those are
-  // parameters to be set. As an estimate, try setting \nu_2 to one 10th the
+  // P*\sqrt{2D\tau}. We don't know what \eta_2 is, that is a parameter to be
+  // set, but D = kB*T/\eta_2. As an estimate, try setting \nu_2 to one 10th the
   // pronucleus drag coefficient. 
   float_T randNumXM = stdNormalDist(generator);
   float_T randNumYM = stdNormalDist(generator);

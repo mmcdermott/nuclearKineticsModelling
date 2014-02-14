@@ -106,10 +106,9 @@ void setup() {
   
   std::stringstream fileNameSS;
   if (fileName == "") {
-    fileNameSS << "../data/" << (2*MT_numb) << "-MT";
-    fileNameSS << ".csv";
+    fileNameSS << fileDir << "NO-FILENAME-SET-MT-" << seed << ".csv";
   } else { 
-    fileNameSS << "../data/" << fileName << ".csv";
+    fileNameSS << fileDir << fileName << ".csv";
   } 
 
   fileName = fileNameSS.str();
