@@ -20,7 +20,7 @@ const float_T Duration = 10;         //duration in minutes
 const float_T Tau      = 1.0/4000.0; //time step in minutes
 
 // MT Parameters
-const unsigned MT_numb = 100; //# of MTs from one centrosome. 
+const unsigned MT_numb = 10; //# of MTs from one centrosome. 
 vec_T MT_Pos_M[MT_numb];
 vec_T MT_Pos_D[MT_numb];
 bool MT_Growing_M[MT_numb];
@@ -55,16 +55,17 @@ const float_T kM = 1;
 const float_T kD = 1;
 
 // Pronucleus Parameters
-const float_T R1_max = 50;      //Embryo width in mum
-const float_T R2_max = 30;      //Embryo length in mum
-const float_T Prad   = 5;       //Pronucleous radius (mum)
-const float_T Eta    = 1;       //Translational drag coeff (pN/(mum min))
-const float_T Mu     = 5 * Eta; //Rotational drag coeff ((pN mum)/min)
-const float_T Eta2   = Eta/10;  //Trans. drag coeff of centrosome (pN/(mum min))
-const float_T D      = 1;       //Diffusion Coefficient for centrosome motion. TODO: UNITS??
+const float_T R1_max = 50;       //Embryo width in mum
+const float_T R2_max = 30;       //Embryo length in mum
+const float_T Prad   = 5;        //Pronucleous radius (mum)
+const float_T Eta    = 1;        //Translational drag coeff (pN/(mum min))
+const float_T Mu     = 5 * Eta;  //Rotational drag coeff ((pN mum)/min)
+const float_T Eta2   = Eta/10;   //Trans. drag coeff of centrosome (pN/(mum min))
+const float_T kbT    = .00414;   //pN mum
+const float_T D      = kbT/Eta2; //Diffusion Coefficient for centrosome motion. (mum^2/min)
 
 //  Starting Coordinates:
-const float_T startPsi = pi/2.0-pi/6.0;
+const float_T startPsi = pi/2.0+pi/6.0;
 const float_T startX   = 15;
 //const float_T startX   = 0;
 const float_T startY   = 0;

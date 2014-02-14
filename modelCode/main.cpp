@@ -95,14 +95,12 @@ void updatePNPos() {
   springAnchorM[1] = proNucPos[1] + sinePrt;
   springAnchorD[0] = proNucPos[0] - cosinePrt;
   springAnchorD[1] = proNucPos[1] - sinePrt;
-  //cout << "springAnchorM = [" << springAnchorM << "]" << endl;
   //This computes the Spring Forces (which evenly affect the centrosomes and
   //pronucleus
   springForceM[0] = kM*(springAnchorM[0]-basePosM[0]);
   springForceM[1] = kM*(springAnchorM[1]-basePosM[1]);
   springForceD[0] = kD*(springAnchorD[0]-basePosD[0]);
   springForceD[1] = kD*(springAnchorD[1]-basePosD[1]);
-  //cout << "springForceM = [" << springAnchorM << "]" << endl;
   //These compute the force on the centrosomes via the MT, which affects the
   //basePos
   netMTForce('M');
@@ -112,7 +110,6 @@ void updatePNPos() {
   force_M[1] += springForceM[1];
   force_D[0] += springForceD[0];
   force_D[1] += springForceD[1];
-  //cout << "force_M = [" << force_M << "]" << endl;
   // Updating Basepos: 
   // Base-pos obeys equation \eta_2 dx/dt = F + \xi,
   // where \xi is a random noise parameter on the order of \sqrt{2D \tau}. To
@@ -122,30 +119,15 @@ void updatePNPos() {
   // pronucleus drag coefficient. 
   float_T randNumXM = stdNormalDist(generator);
   float_T randNumYM = stdNormalDist(generator);
-  //cout << "randNumXM = " << randNumXM << endl;
-  //cout << "randNumYM = " << randNumYM << endl;
-  //TODO: Check if this is right. 
   float_T xiXM      = randNumXM*sqrt(2*D*Tau);
   float_T xiYM      = randNumYM*sqrt(2*D*Tau);
-  //cout << "xiXM = " << xiXM << endl;
-  //cout << "xiYM = " << xiYM << endl;
 
   float_T randNumXD = stdNormalDist(generator);
   float_T randNumYD = stdNormalDist(generator);
   float_T xiXD      = randNumXD*sqrt(2*D*Tau);
   float_T xiYD      = randNumYD*sqrt(2*D*Tau);
 
-  force_M[0] += xiXM;
-  force_M[1] += xiYM;
-  force_D[0] += xiXD;
-  force_D[1] += xiYD;
-  //cout << "force_M = [" << force_M << "]" << endl;
-  //exit(1);
-  
   //Now to compute the force on the ProNucleus. 
-  // This is old stuff, when we didn't have springs. 
-  //  force[0] = force_M[0] + force_D[0];
-  //  force[1] = force_M[1] + force_D[1];
   force[0] = -(springForceM[0] + springForceD[0]);
   force[1] = -(springForceM[1] + springForceD[1]);
   //Note that we can see that the angle between positive torque and the true x
@@ -159,10 +141,10 @@ void updatePNPos() {
   if (translation) {
     proNucPos[0] += force[0]*(1.0/Eta)*Tau;
     proNucPos[1] += force[1]*(1.0/Eta)*Tau;
-    basePosM[0]  += force_M[0]*(1.0/Eta2)*Tau;
-    basePosM[1]  += force_M[1]*(1.0/Eta2)*Tau;
-    basePosD[0]  += force_D[0]*(1.0/Eta2)*Tau;
-    basePosD[1]  += force_D[1]*(1.0/Eta2)*Tau;
+    basePosM[0]  += force_M[0]*(1.0/Eta2)*Tau + xiXM;
+    basePosM[1]  += force_M[1]*(1.0/Eta2)*Tau + xiYM;
+    basePosD[0]  += force_D[0]*(1.0/Eta2)*Tau + xiXD;
+    basePosD[1]  += force_D[1]*(1.0/Eta2)*Tau + xiYD;
   }
   psi += (1/Mu)*torque*Tau;
 }
