@@ -12,8 +12,10 @@ typedef float float_T;
 typedef float_T vec_T[2];
 const float_T pi = 3.1415926535897;
 
-//Const
-bool ONLY_COMMA = true;
+//Type Parameters
+const bool springsOn = true;
+const bool translation = true;
+const bool ONLY_COMMA = true;
 
 //Parameters
 const float_T Duration = 10;         //duration in minutes
@@ -50,9 +52,8 @@ float_T torque_M;
 float_T torque_D;
 float_T torque;
 //   Spring Parameters
-//   TODO: Make these nonzero. 
 const float_T kM = 1;
-const float_T kD = 1;
+const float_T kD = 100;
 
 // Pronucleus Parameters
 const float_T R1_max = 50;       //Embryo width in mum
@@ -65,9 +66,9 @@ const float_T kbT    = .00414;   //pN mum
 const float_T D      = kbT/Eta2; //Diffusion Coefficient for centrosome motion. (mum^2/min)
 
 //  Starting Coordinates:
-const float_T startPsi = pi/2.0;//+pi/6.0;
-const float_T startX   = 0;
+const float_T startPsi = pi/2.0;//+pi/8.0;
 //const float_T startX   = 0;
+const float_T startX   = 15;
 const float_T startY   = 0;
 
 //  General Coordinate Initializations: 
@@ -75,9 +76,6 @@ float_T psi;
 vec_T basePosM;
 vec_T basePosD;
 vec_T proNucPos;
-
-// Type Parameters
-const bool translation = true;
 
 // Band parameters: 
 //  regionAngles:
@@ -109,8 +107,6 @@ std::string fileName  = "";
 std::string fileDir   = "../data/";
 std::string fileOrder = "t,proNucPos,psi,MT_Pos_M,MT_Pos_D,force_M,force_D,\
                          force,torque_M,torque_D,torque,basePosM,basePosD";
-//TODO: correct that ^
-
 
 // Random Number Generation Parameters: 
 std::normal_distribution<float_T> stdNormalDist;

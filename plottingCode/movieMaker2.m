@@ -1,12 +1,11 @@
 run parameters
 
 nplot   = 1;
-figpath = ['figs'];
+figpath = ['figs2'];
 
 run clean_fig_data_folder
 
-figure('visible','on');
-subplot(2, 2, 1);
+figure('visible','off');
 hold on;
 
 axis equal
@@ -47,59 +46,12 @@ end_M = start_M + 2*mt_numb - 1;
 start_D = end_M + 1;
 end_D = start_D + 2*mt_numb - 1;
 
-forceStart = end_D + 5;
-forceEnd   = end_D + 6;
-forceFull  = DATA(:,forceStart:forceEnd);
-forceMag   = sqrt(sum(forceFull.^2,2));
-forceAng   = atan2(forceFull(:,2),forceFull(:,1));
-
-torqueData = DATA(:,end_D + 9);
-
 startBasePosM = end_D + 10;
 endBasePosM   = startBasePosM + 1;
 startBasePosD = endBasePosM + 1;
 endBasePosD   = startBasePosD + 1;
 
-%plot force:
-subplot(2, 2, 2);
-hold on;
-
-axisLimForce = max(max(forceMag),-min(forceMag)) + 2;
-axis([0 Duration -axisLimForce axisLimForce]);
-xlabel('Time (min)');
-forceMagP = plot(time, forceMag, 'Color', 'g', 'LineWidth', 1);
-forceAngP = plot(time, forceAng, 'Color', 'k', 'LineWidth', 1);
-legend([forceMagP forceAngP], {'Force Magnitude (pN)','Force Angle (radians)'});
-timeMarkerForce = plot([0 0], [-axisLimForce axisLimForce],'Color','g','LineWidth',2);
-
-
-title('Force Magnitude & Direction vs time','fontsize',16);
-
-subplot(2,2,3);
-polar(0, max(forceMag));
-hold on;
-forceAngZeros = zeros(1,2*length(forceAng));
-forceMagZeros = zeros(1,2*length(forceMag));
-forceAngZeros(2:2:end) = forceAng;
-forceMagZeros(2:2:end) = forceMag;
-tp = polar(forceAngZeros, forceMagZeros,':');
-set(tp, 'linewidth', 0.2);
-timeMarkerPolar = polar([0 0],[0 0],'g*');
-set(timeMarkerPolar, 'linewidth', 3);
-legend([tp timeMarkerPolar], {'Force History','Current Net Force'});
-
-subplot(2,2,4);
-hold on;
-axisLimTorque = max(max(torqueData),-min(torqueData)) + 2;
-axis([0 Duration -axisLimTorque axisLimTorque]);
-xlabel('Time (min)');
-ylabel('Torque (pN mum)');
-torqueP = plot(time, torqueData, 'Color', 'r', 'LineWidth',1);
-legend([torqueP], {'Torque (pN mum)'});
-timeMarkerTorque = plot([0 0], [-axisLimTorque axisLimTorque],'Color','g','LineWidth',2);
-
-
-step = 200;
+step = 1;
 for i = 1 : step : length(DATA)
     data = DATA(i,:);
     t = data(1);
@@ -126,14 +78,6 @@ for i = 1 : step : length(DATA)
     MT_posXd = [xP_d.*ones(mt_numb,1) MT_xd]';
     MT_posYd = [yP_d.*ones(mt_numb,1) MT_yd]';
     
-    force_M  = data((end_D+1):(end_D+2));
-    force_D  = data((end_D+3):(end_D+4));
-    force    = data((end_D+5):(end_D+6));
-    
-    torque_M = data(end_D + 7);
-    torque_D = data(end_D + 8);
-    torque   = data(end_D + 9);
-    
     startBasePosM = end_D + 10;
     endBasePosM   = startBasePosM + 1;
     startBasePosD = endBasePosM + 1;
@@ -146,8 +90,6 @@ for i = 1 : step : length(DATA)
     MT_posXd = [basePosD(1).*ones(mt_numb,1) MT_xd]';
     MT_posYd = [basePosD(2).*ones(mt_numb,1) MT_yd]';
 
-    
-    subplot(2, 2, 1);
     cla;
     hold on;
     axis equal
@@ -175,24 +117,6 @@ for i = 1 : step : length(DATA)
     % file_print=[figpath '/' num2str(nplot/1000) '.jpg'];
     % print(gcf,'-djpeg',file_print);
    
-    subplot(2, 2, 2);
-    delete(timeMarkerForce);
-    timeMarkerForce = plot([t t], [-axisLimForce axisLimForce],'Color','g','LineWidth',2);
-
-    mag      = norm(force);
-    theta    = atan2(force(2),force(1));
-    
-    subplot(2,2,3);
-    thetaPolar = [0 theta];
-    rho        = [0 mag];
-    delete(timeMarkerPolar);
-    timeMarkerPolar = polar(thetaPolar, rho, '-g*');
-    set(timeMarkerPolar, 'linewidth', 3);
-    
-    subplot(2,2,4);
-    delete(timeMarkerTorque);
-    timeMarkerTorque = plot([t t], [-Prad*10*F_MT Prad*10*F_MT],'Color','g','LineWidth',2);
-
     % print
     file_print=[figpath '/' num2str(i/length(DATA)) '.jpg'];
     print(gcf,'-djpeg',file_print);

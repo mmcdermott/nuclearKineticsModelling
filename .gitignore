@@ -23,3 +23,6 @@ main
 
 # Data files
 *.csv
+
+# Images
+*.jpg
