@@ -4,6 +4,7 @@
 #include <random>
 #include <fstream>
 #include <assert.h>
+#include <cstring>
 
 using namespace std;
 
@@ -53,6 +54,10 @@ void writeData(const float_T t) {
 
 void writeFinalData() {
   file << proNucPos << "," << psi << endl;
+}
+
+void writePartialData(const float_T t) {
+  file<<t<<","<<proNucPos <<","<< psi <<","<< basePosM <<","<< basePosD << endl;
 }
 
 void mtForceCalc(const vec_T (&mtEndPos)[MT_numb], const vec_T &basePos, const
@@ -246,9 +251,14 @@ bool checkBoundary() {
     return dist >= 1;
 }
 
-void runModel(bool writeAllData) {
+void runModel(bool writeAllData, bool writeTempData) {
+  float_T nextWrite = 0;
+  float_T writeInterval = 0.5;
   if (writeAllData) {
     writeData(0);
+  } else if (writeTempData) {
+    writePartialData(0);
+    nextWrite += writeInterval;
   }
   for (float_t t=0; t <= Duration; t += Tau) {
     if (checkBoundary())
@@ -345,9 +355,12 @@ void runModel(bool writeAllData) {
     }
     if (writeAllData) {
       writeData(t+Tau);
+    } else if (writeTempData && (t > nextWrite)) {
+      writePartialData(t+Tau);
+      nextWrite += writeInterval;
     }
   }
-  if (!writeAllData) {
+  if (!(writeAllData || writeTempData)) {
     writeFinalData();
   }
 }
@@ -360,6 +373,9 @@ void usage() {
 int main(int argc, const char* argv[]) {
   int numRuns;
   bool writeAllData = false;
+  bool writeTempData = false;
+  string writeAllDataKey = "all";
+  string writeTempDataKey = "temp";
   if (argc == 1) {
     numRuns = 1;
     writeAllData = true;
@@ -371,7 +387,12 @@ int main(int argc, const char* argv[]) {
   } else if (argc == 4) {
     numRuns = atoi(argv[1]);
     fileName = argv[2];
-    writeAllData = true;
+    if (argv[3] == writeAllDataKey) {
+      writeAllData = true;
+    } else if (argv[3] == writeTempDataKey) {
+      cout << "Writing Temporary Data" << endl;
+      writeTempData = true;
+    }
   } else {
     usage();
     return 1;
@@ -379,7 +400,7 @@ int main(int argc, const char* argv[]) {
   setup();
 
   for (int run = 0; run < numRuns; ++run) {
-    runModel(writeAllData);
+    runModel(writeAllData,writeTempData);
     setToBasePos();
   }
   return 0;

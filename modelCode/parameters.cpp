@@ -66,7 +66,7 @@ const float_T kbT    = .00414;   //pN mum
 const float_T D      = kbT/Eta2; //Diffusion Coefficient for centrosome motion. (mum^2/min)
 
 //  Starting Coordinates:
-const float_T startPsi = pi/2.0;//+pi/8.0;
+const float_T startPsi = pi/2.0+pi/8.0;
 //const float_T startX   = 0;
 const float_T startX   = 15;
 const float_T startY   = 0;
