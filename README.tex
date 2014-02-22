@@ -36,11 +36,33 @@
 \end{description}
 \section{Usage Instructions:}
   The three basic steps to to use this code are:\\
-  \textbf{To Compile:} Run \texttt{make clean \&\& make} on the command line.\\
-  \textbf{To Run:} After compilation, run \texttt{./main} on the command line.\\
-  \textbf{To View: } After running the code, run the matlab script
-  \texttt{readData.m} within matlab to produce a graphic representation of the
-  evolution of the system. 
+  \textbf{To Compile:} Run \texttt{make} on the command line.\\
+  \textbf{To Run:} After compilation, run
+  \begin{verbatim}
+  ./mtKineticModel <Number of Runs> <Output File> [temp/all]
+  \end{verbatim}
+  on the command line. Here, \texttt{<Number of Runs>} denotes the number of
+  runs of the given system the model should produce and \texttt{<Output File>}
+  specifies the file to which the results should be written. Note that this file
+  will be placed in the directory \texttt{nuclearKineticsModelling/data}. The
+  final paramterer, \texttt{[temp/all]}, is an optional parameter. If omitted,
+  the system will only store the final configuration of the system in the result
+  file. If given as \texttt{temp}, it will store 30 second time slices in the
+  result system for each model run, in sequence (i.e. it will list various
+  parameters for 30 second slices for the first run, then those for the second,
+  and so on and so forth). If given as \texttt{all}, it will write data for
+  every timestep in the result file, in sequence, for each model run. \\
+  \textbf{To View: } There are a variety of matlab scripts in the
+  \texttt{plottingCode} folder to visualize the results. Of particular note are
+  the histogram scripts, \texttt{positionRotationHist.m} and
+  \texttt{positionRotationHistCompare.m}, the single-run visualization tool,
+  \texttt{readData.m}, and the movie-frame making scripts
+  \texttt{movieMaker*.m}. All of these scripts are run with the following basic
+  premise: Open \texttt{MATLAB}, set values \texttt{dataDir} and
+  \texttt{dataFile} \textit{(and/or \texttt{dataFile2})} in the \texttt{MATLAB}
+  console, then run the script. \texttt{dataDir} stands for the directory (as a
+  sub-directory of \texttt{'nuclearKineticsModelling/data/}) and
+  \texttt{dataFile} stands for the dataFile in question. 
   \subsection{Basic Usage:}
   For basic usage, the only additional step beyond simple compilation and
   running is parameter modification. At this lever, there are two relevant
