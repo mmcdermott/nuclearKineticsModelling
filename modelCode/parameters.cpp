@@ -13,7 +13,7 @@ typedef float_T vec_T[2];
 const float_T pi = 3.1415926535897;
 
 //Type Parameters
-const bool springsOn = false;
+const bool springsOn = true;
 const bool translation = true;
 const bool ONLY_COMMA = true;
 
@@ -52,8 +52,8 @@ float_T torque_M;
 float_T torque_D;
 float_T torque;
 //   Spring Parameters
-const float_T kM = 1;
-const float_T kD = 100;
+const float_T kM = 8;
+const float_T kD = 16;
 
 // Pronucleus Parameters
 const float_T R1_max = 25;       //Embryo width in mum
@@ -66,7 +66,7 @@ const float_T kbT    = .00414;   //pN mum
 const float_T D      = kbT/Eta2; //Diffusion Coefficient for centrosome motion. (mum^2/min)
 
 //  Starting Coordinates:
-const float_T startPsi = pi/2.0+pi/8.0;
+const float_T startPsi = pi/2.0;
 const float_T startX   = 7.5;
 const float_T startY   = 0;
 
