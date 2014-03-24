@@ -25,6 +25,11 @@ void writeParams() {
     file << "," << regionProbabilities[i];
   }
   file << std::endl;
+  file << regionForceMultipliers[0];
+  for (int i = 1; i < numRegions; ++i) {
+    file << "," << regionForceMultipliers[i];
+  }
+  file << std::endl;
 }
 
 void setToBasePos() {
@@ -75,9 +80,9 @@ void setToBasePos() {
     //Using these RVs to construct the position variables of the MTs.
     float_T r_M    = sqrt(randMR); //Random Radius of MT;
     //std::cout << r_M << std::endl;
-    float_T t_M    = (startPsi - pi/2) + pi*randMT;    //Random Theta of MT;
+    float_T t_M    = (startPsi - pi/2) + (envelopeM[1]-envelopeM[0])*randMT + envelopeM[0];    //Random Theta of MT;
     float_T r_D    = sqrt(randDR); //Random Radius of MT;
-    float_T t_D    = (startPsi - pi/2) + pi*(1+randDT);//Random Theta of MT;
+    float_T t_D    = (startPsi + pi/2) + (envelopeD[1]-envelopeD[0])*(randDT) + envelopeD[0];//Random Theta of MT;
     //Assigning the positions. 
     MT_Pos_M[i][0] = basePosM[0]+ r_M*cos(t_M);
     MT_Pos_M[i][1] = basePosM[1]+ r_M*sin(t_M);

@@ -46,6 +46,7 @@ Tau      = PlottingParams(6);
 numRegions = csvread(dataFileFull, 2, 0, [2,0, 2,0]);
 regionAngles = csvread(dataFileFull, 3, 0, [3,0, 3,numRegions]);
 regionProbabilities = csvread(dataFileFull, 4, 0, [4, 0, 4, numRegions-1]);
+regionForceMultipliers = csvread(dataFileFull, 5, 0, [5, 0, 5, numRegions-1]);
 
 %  Initialization of Plotting Parameters: 
 x    = startX;
@@ -61,5 +62,5 @@ yP_m = y + sinePrt;
 yP_d = y - sinePrt;
 
 %  Data Fromat Params:
-rowStart = 5;
+rowStart = 6;
 colStart = 0;

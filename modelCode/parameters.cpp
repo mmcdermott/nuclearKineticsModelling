@@ -13,7 +13,7 @@ typedef float_T vec_T[2];
 const float_T pi = 3.1415926535897;
 
 //Type Parameters
-const bool springsOn = true;
+const bool springsOn = false;
 const bool translation = true;
 const bool ONLY_COMMA = true;
 
@@ -51,6 +51,9 @@ vec_T force;
 float_T torque_M;
 float_T torque_D;
 float_T torque;
+//   Envelope Parameters
+const vec_T envelopeM = {0,pi}; // The envelope in which MTs from M can grow. 
+const vec_T envelopeD = {pi/3.0, 2*pi/3.0}; // The envelope in which MTs from M can grow. 
 //   Spring Parameters
 const float_T kM = 8;
 const float_T kD = 16;
@@ -67,7 +70,7 @@ const float_T D      = kbT/Eta2; //Diffusion Coefficient for centrosome motion. 
 
 //  Starting Coordinates:
 const float_T startPsi = pi/2.0;
-const float_T startX   = 7.5;
+const float_T startX   = 8.5;
 const float_T startY   = 0;
 
 //  General Coordinate Initializations: 
@@ -93,12 +96,19 @@ vec_T proNucPos;
 //    This defines the probabilities associated with the regions defined by the
 //    regionAngles variable. It has length one less than the regionAngles
 //    vector, as it is broken up into regions, not enpoints of regions. 
-const int numRegions = 1;
-float_T alpha = 3*pi/8.0;
+const int numRegions = 5;
+float_T start = 3*pi/16.0;
+float_T end = 4.5*pi/16.0;
+const float_T regionAngles[numRegions+1] = {0, start, end, 2*pi - end, 2*pi - start, 2*pi};
+const float_T regionProbabilities[numRegions] = {1,1,1,1,1};
+const float_T regionForceMultipliers[numRegions] = {1,-1,1,-1,1};
+//
+//float_T alpha = 3*pi/8.0;
 //const float_T regionAngles[numRegions + 1] = {0, alpha, 2*pi - alpha, 2*pi};
 //const float_T regionProbabilities[numRegions] = {0.5, 1, 0.5};
-const float_T regionAngles[numRegions + 1] = {0, 2*pi};
-const float_T regionProbabilities[numRegions] = {1};
+//const float_T regionAngles[numRegions + 1] = {0, 2*pi};
+//const float_T regionProbabilities[numRegions] = {1};
+//const float_T regionForcesMultipliers[numRegions] = {1};
 
 // File Parameters
 std::ofstream file;

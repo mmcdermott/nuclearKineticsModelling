@@ -67,10 +67,22 @@ void mtForceCalc(const vec_T (&mtEndPos)[MT_numb], const vec_T &basePos, const
   force[1] = 0;
   for (size_t i=0; i < MT_numb; ++i) {
     if (mtContact[i] == 0) continue;
+    float_T angle = atan2(mtEndPos[i][1],mtEndPos[i][0]);
+    if (angle < 0) angle += 2*pi;
+    float_T multiplier = 1;
+    for (size_t i = 1; i <= numRegions; ++i) {
+      if (angle < regionAngles[i] && angle >= regionAngles[i-1]) {
+        //cout << "Region " << i << " with bounds [" << regionAngles[i-1];
+        //cout << ", " << regionAngles[i] << ") yields multiplier ";
+        multiplier = regionForceMultipliers[i-1];
+        //cout << multiplier << endl;
+      }
+    }
+
     float_T mag = sqrt(pow(mtEndPos[i][0] - basePos[0],2) 
                        + pow(mtEndPos[i][1] - basePos[1],2));
-    force[0] += (mtEndPos[i][0] - basePos[0])/mag;
-    force[1] += (mtEndPos[i][1] - basePos[1])/mag;
+    force[0] += multiplier*(mtEndPos[i][0] - basePos[0])/mag;
+    force[1] += multiplier*(mtEndPos[i][1] - basePos[1])/mag;
   }
   force[0] *= forceMag;
   force[1] *= forceMag;
@@ -84,7 +96,7 @@ void netMTForce(char centrosome) {
       mtForceCalc(MT_Pos_M, basePosM, MT_Contact_M, force_M, F_MT);
       break;
     case 'D':
-      mtForceCalc(MT_Pos_D, basePosD, MT_Contact_D, force_D, F_MT);
+      mtForceCalc(MT_Pos_D, basePosD, MT_Contact_D, force_D, 0.50*F_MT);
       break;
   }
 }
@@ -180,15 +192,6 @@ void advanceMT(const float_T vel, vec_T& vec, const float_T mag) {
   vec[1] *= (1 + vel*Tau/mag);
 }
 
-void respawnMTB(vec_T& vec, const float_T ang) {
-  float_T randR = testStat();  
-  float_T randT = testStat();
-  float_T r     = sqrt(randR);
-  float_T t     = pi*randT + ang - pi/2.0;
-  vec[0]        = r*cos(t);
-  vec[1]        = r*sin(t);
-}
-
 float_T probContact(float_T ang, const char centrosome) {
   for (size_t i = 1; i <= numRegions; ++i)
     if (ang < regionAngles[i] && ang >= regionAngles[i-1])
@@ -227,17 +230,26 @@ void mtContactTest(const char centrosome, const unsigned i) {
   }
 }
 
-void respawnMT(const char centrosome, vec_T& vec, const unsigned i) {
+void respawnMTB(vec_T& vec, const float_T ang, const vec_T& envelope) {
+  float_T randR = testStat();  
+  float_T randT = testStat();
+  float_T r     = sqrt(randR);
+  float_T t     = (envelope[1]-envelope[0])*randT + ang + envelope[0] - pi/2.0;
+  vec[0]        = r*cos(t);
+  vec[1]        = r*sin(t);
+}
+
+void respawnMT(const char centrosome, vec_T& vec, const unsigned i, const vec_T& envelope) {
   //assert(centrosome == 'M' || centrosome == 'D')
   switch (centrosome) {
     case 'M':
-      respawnMTB(vec, psi);
+      respawnMTB(vec, psi, envelope);
       MT_Growing_M[i]   = true;
       MT_GrowthVel_M[i] = Vg;
       MT_Contact_M[i]   = 0;
       break;
     case 'D':
-      respawnMTB(vec, psi + pi);
+      respawnMTB(vec, psi + pi, envelope);
       MT_Growing_D[i]   = true;
       MT_GrowthVel_D[i] = Vg;
       MT_Contact_D[i]   = 0;
@@ -287,11 +299,23 @@ void runModel(bool writeAllData, bool writeTempData) {
       float_T mag_M = sqrt(pow(vecM[0], 2) + pow(vecM[1], 2));
       float_T mag_D = sqrt(pow(vecD[0], 2) + pow(vecD[1], 2));
 
-      //Respawning if necessary. 
-      if (mag_M < 0.2) 
-        respawnMT('M', vecM, i);
-      if (mag_D < 0.2) 
-        respawnMT('D', vecD, i);
+      //Respawning if necessary. First, we need to compute the angular position
+      //of the MT relative to the pronucleus. 
+      float_T angleM = atan2(vecM[1],vecM[0]);
+      if (angleM < 0) angleM += 2*pi;
+      float_T angleD = atan2(vecD[1],vecD[0]);
+      if (angleD < 0) angleD += 2*pi;
+      //angleM & angleD give us the cartesian angle of the MT relative to the
+      //Pronucleus, but we really want to use a rotated axis system that aligns
+      //with the pronucleus. The Mt base points are offset by $\pi/2$, and we
+      //have $\psi$, so some simple geometry shows
+      float_T thetaM = angleM - (psi - pi/2.0);
+      float_T thetaD = angleD - (psi + pi/2.0);
+
+      if (mag_M < 0.2 || ((thetaM < envelopeM[0]) || (thetaM > envelopeM[1])))
+        respawnMT('M', vecM, i, envelopeM);
+      if (mag_D < 0.2 || ((thetaD < envelopeD[0]) || (thetaD > envelopeD[1])))
+        respawnMT('D', vecD, i, envelopeD);
 
       //Growing or Shrinking the MT. 
       advanceMT(MT_GrowthVel_M[i], vecM, mag_M);

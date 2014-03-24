@@ -15,7 +15,7 @@ xlabel('x (nm)','fontsize',16)
 ylabel('y (nm)','fontsize',16) 
 % plot boundary and interior points
 
-regionPlotter(0,0,R1_max,R2_max,regionAngles,regionProbabilities)
+regionPlotter(0,0,R1_max,R2_max,regionAngles,regionProbabilities,regionForceMultipliers)
 ellipse(0,0,R1_max,R2_max,'k')
 circle_1(x,y,Prad,'g')
 circle_1(xP_m,yP_m,Prad/8,'r')
@@ -51,7 +51,7 @@ endBasePosM   = startBasePosM + 1;
 startBasePosD = endBasePosM + 1;
 endBasePosD   = startBasePosD + 1;
 
-step = 1;
+step = 100;
 for i = 1 : step : length(DATA)
     data = DATA(i,:);
     t = data(1);
@@ -99,7 +99,7 @@ for i = 1 : step : length(DATA)
     ylabel('y (nm)','fontsize',16) 
     title(['Time = ' num2str(t) ' of ' num2str(length(DATA)*Tau)],'fontsize',16)
 
-    regionPlotter(0,0,R1_max,R2_max,regionAngles,regionProbabilities);
+    regionPlotter(0,0,R1_max,R2_max,regionAngles,regionProbabilities,regionForceMultipliers);
     ellipse(0,0,R1_max,R2_max,'k')
     circle_1(x,y,Prad,'g') 
     line([basePosM(1) xP_m], [basePosM(2) yP_m]);
