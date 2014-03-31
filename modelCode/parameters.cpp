@@ -110,6 +110,14 @@ const int numRegions = 1;
 const float_T regionAngles[numRegions + 1] = {0, 2*pi};
 const float_T regionProbabilities[numRegions] = {1};
 const float_T regionForceMultipliers[numRegions] = {1};
+// MT density limitations
+const float_T contactWindow = pi/32.0;
+const float_T probabilityFactor = 1/2.0;
+int effectiveNumRegions;
+//Need dynamically sized containers here. 
+std::vector<float_T> effRegionAngles = {0, 2*pi};
+std::vector<float_T> effRegionProbabilities = {1};
+std::vector<float_T> effRegionMultipliers = {1};
 
 // File Parameters
 std::ofstream file;

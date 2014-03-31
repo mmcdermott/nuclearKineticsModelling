@@ -60,6 +60,27 @@ void writePartialData(const float_T t) {
   file<<t<<","<<proNucPos <<","<< psi <<","<< basePosM <<","<< basePosD << endl;
 }
 
+void updateRegionProbabilities(const float_T angle) {
+  float_T low = angle - contactWindow;
+  float_T high = angle + contactWindow;
+  size_t lowIndex = 0;
+  for (size_t i = 1; i <= numRegions; ++i) {
+    if (low < regionAngles[i] && low >= regionAngles[i-1]) {
+      //ADD low in at poisition $i$. 
+      lowIndex = i;
+      break;
+    } 
+  }
+  for (size_t i = lowIndex+1; i <= numRegions; ++i) {
+    if (high < regionAngles[i] && high >= regionAngles[i-1]) {
+      //ADD high in at poisition $i$. 
+      //Modify probability of region i-1 to new i.
+      break;
+    } 
+    //Modify probability of region i-1 to i.
+  }
+}
+
 void mtForceCalc(const vec_T (&mtEndPos)[MT_numb], const vec_T &basePos, const
     float_T (&mtContact)[MT_numb], vec_T &force, float_T forceMag = F_MT) 
 {
@@ -214,6 +235,7 @@ void mtContactTest(const char centrosome, const unsigned i) {
         MT_GrowthVel_M[i] = 0;
         MT_Contact_M[i]   = contact_length;
         MT_Growing_M[i]   = false;
+        //TODO: update contact prob here. 
       } else {
         MT_GrowthVel_M[i] = -Vs_c;
         MT_Growing_M[i]   = false;
@@ -226,6 +248,7 @@ void mtContactTest(const char centrosome, const unsigned i) {
         MT_GrowthVel_D[i] = 0;
         MT_Contact_D[i]   = contact_length;
         MT_Growing_D[i]   = false;
+        //TODO: update contact prob here. 
       } else {
         MT_GrowthVel_D[i] = -Vs_c;
         MT_Growing_D[i]   = false;
