@@ -96,7 +96,7 @@ void netMTForce(char centrosome) {
       mtForceCalc(MT_Pos_M, basePosM, MT_Contact_M, force_M, F_MT);
       break;
     case 'D':
-      mtForceCalc(MT_Pos_D, basePosD, MT_Contact_D, force_D, 0.50*F_MT);
+      mtForceCalc(MT_Pos_D, basePosD, MT_Contact_D, force_D, F_MT);
       break;
   }
 }
@@ -170,6 +170,10 @@ void updatePNPos() {
     //These compute the force on the centrosomes via the MTs
     netMTForce('M');
     netMTForce('D');
+    if (spitValues) {
+      cout << "Y-force on M: " << force_M[1] << endl;
+      cout << "Y-force on D: " << force_D[1] << endl;
+    }
 
     force[0] = force_M[0] + force_D[0];
     force[1] = force_M[1] + force_D[1];
@@ -273,6 +277,9 @@ void runModel(bool writeAllData, bool writeTempData) {
     nextWrite += writeInterval;
   }
   for (float_t t=0; t <= Duration; t += Tau) {
+    if (t > 400*Tau) {
+      spitValues = false;
+    }
     if (checkBoundary())
       break;
     while (psi >= 2*pi) {
