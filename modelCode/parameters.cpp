@@ -112,7 +112,7 @@ const float_T regionProbabilities[numRegions] = {1};
 const float_T regionForceMultipliers[numRegions] = {1};
 // MT density limitations
 const float_T contactWindow = pi/32.0;
-const float_T probabilityFactor = 1/2.0;
+const float_T probabilityFactor = 0;//1/2.0;
 int effectiveNumRegions;
 //Need dynamically sized containers here. 
 std::vector<float_T> effRegionAngles = {0, 2*pi};

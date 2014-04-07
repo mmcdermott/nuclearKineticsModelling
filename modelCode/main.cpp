@@ -61,6 +61,8 @@ void writePartialData(const float_T t) {
 }
 
 void updateRegionProbabilitiesD(const float_T angle) {
+  //cout << "Calling updateRegionProbabilitiesD! effRegionAngles.size = ";
+  //cout << effRegionAngles.size() << endl;
   //An MT Detached, now we need to remove some regions. 
   float_T low = angle - contactWindow;
   float_T high = angle + contactWindow;
@@ -77,15 +79,14 @@ void updateRegionProbabilitiesD(const float_T angle) {
   for (; itA != effRegionAngles.end(); itA++, itP++) {
     if (low == *itA) {
       //low >= *(it-1), as otherwise you would have stopped there
-      effRegionAngles.erase(itA);
+      itA = effRegionAngles.erase(itA);
       break;
     }
   }
-  itA++;
   for (; itA != effRegionAngles.end(); itA++,itP++) {
     if (high == *itA) {
-      effRegionProbabilities.erase(itP);
-      effRegionAngles.erase(itA);
+      itP = effRegionProbabilities.erase(itP);
+      itA = effRegionAngles.erase(itA);
       metHigh = true;
       break;
     }
@@ -96,8 +97,8 @@ void updateRegionProbabilitiesD(const float_T angle) {
     itP = effRegionProbabilities.begin();
     for (; itA != effRegionAngles.end(); itA++,itP++) {
       if (high == *itA) {
-        effRegionProbabilities.erase(itP);
-        effRegionAngles.erase(itA);
+        itP = effRegionProbabilities.erase(itP);
+        itA = effRegionAngles.erase(itA);
         metHigh = true;
         break;
       }
@@ -107,6 +108,8 @@ void updateRegionProbabilitiesD(const float_T angle) {
 }
 
 void insertAndScale(float_T low, float_T high) {
+  //cout << "Calling InsertAndScale! effRegionAngles.size = ";
+  //cout << effRegionAngles.size() << endl;
   if (low < 0) {
     low += 2*pi; 
     high += 2*pi;
@@ -117,7 +120,7 @@ void insertAndScale(float_T low, float_T high) {
   for (; itA != effRegionAngles.end(); itA++, itP++) {
     if (low < *itA) {
       //low >= *(it-1), as otherwise you would have stopped there
-      effRegionAngles.insert(itA, low);
+      itA = effRegionAngles.insert(itA, low);
       break;
     }
   }
@@ -127,10 +130,10 @@ void insertAndScale(float_T low, float_T high) {
       float_T oldProb = *itP;
       float_T newProb = probabilityFactor * (*itP);
 
-      effRegionProbabilities.insert(itP, newProb);
-      effRegionAngles.insert(itA,high);
+      itP = effRegionProbabilities.insert(itP, newProb);
+      itA = effRegionAngles.insert(itA,high);
       itP++;
-      effRegionProbabilities.insert(itP, oldProb);
+      itP = effRegionProbabilities.insert(itP, oldProb);
 
       metHigh = true;
       break;
@@ -145,10 +148,10 @@ void insertAndScale(float_T low, float_T high) {
         float_T oldProb = *itP;
         float_T newProb = probabilityFactor * (*itP);
 
-        effRegionProbabilities.insert(itP, newProb);
-        effRegionAngles.insert(itA,high);
+        itP = effRegionProbabilities.insert(itP, newProb);
+        itA = effRegionAngles.insert(itA,high);
         itP++;
-        effRegionProbabilities.insert(itP, oldProb);
+        itP = effRegionProbabilities.insert(itP, oldProb);
 
         metHigh = true;
         break;
