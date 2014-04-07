@@ -11,7 +11,7 @@
 typedef float float_T;
 typedef float_T vec_T[2];
 const float_T pi = 3.1415926535897;
-bool spitValues = true;
+bool spitValues = false;
 
 //Type Parameters
 const bool springsOn = false;
