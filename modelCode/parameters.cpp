@@ -108,13 +108,28 @@ const float_T regionForceMultipliers[numRegions] = {1,-1,1,-1,1};
 //const float_T regionProbabilities[numRegions] = {1};
 //const float_T regionForceMultipliers[numRegions] = {1};
 // MT density limitations
-const float_T contactWindow = pi/64.0;
-const float_T probabilityFactor = 1/2.0;
-//int effectiveNumRegions;
-//Need dynamically sized containers here. 
-std::vector<float_T> effRegionAngles = {0, start, end, 2*pi - end, 2*pi - start, 2*pi};
-std::vector<float_T> effRegionProbabilities = {1,1,1,1,1};
-//std::vector<float_T> effRegionMultipliers = {1};
+//  Only one contact per window:
+const size_t numberContactWindows = 129;
+const float_T contactWindowAngles[numberContactWindows] = 
+  {0., 0.039985, 0.079885, 0.119585, 0.159085, 0.198485, 0.237785, 0.277085,
+    0.316485, 0.356085, 0.396085, 0.436485, 0.477585, 0.519485, 0.562285,
+    0.606085, 0.651085, 0.697385, 0.745085, 0.794285, 0.845085, 0.897585,
+    0.951785, 1.00768, 1.06538, 1.12468, 1.18558, 1.24798, 1.31168, 1.37648,
+    1.44218, 1.50848, 1.57508, 1.64168, 1.70788, 1.77348, 1.83818, 1.90178,
+    1.96398, 2.02468, 2.08378, 2.14119, 2.19689, 2.25089, 2.30309, 2.35369,
+    2.40269, 2.45019, 2.49629, 2.54109, 2.58479, 2.62739, 2.66909, 2.71009,
+    2.75049, 2.79039, 2.82999, 2.86939, 2.90869, 2.94799, 2.98739, 3.02699,
+    3.06669, 3.10659, 3.14649, 3.18639, 3.22619, 3.26589, 3.30539, 3.34479,
+    3.38409, 3.42339, 3.46279, 3.50239, 3.54239, 3.58289, 3.62409, 3.66609,
+    3.70899, 3.75289, 3.79799, 3.84439, 3.89219, 3.94159, 3.99259, 4.04529,
+    4.09969, 4.15579, 4.21359, 4.27309, 4.33419, 4.39679, 4.46069, 4.52569,
+    4.59149, 4.65779, 4.72439, 4.79089, 4.85709, 4.92259, 4.98719, 5.05059,
+    5.11269, 5.17329, 5.23219, 5.28939, 5.34489, 5.39869, 5.45069, 5.50109,
+    5.54989, 5.59719, 5.64309, 5.68779, 5.73128, 5.77378, 5.81548, 5.85638,
+    5.89668, 5.93658, 5.97608, 6.01538, 6.05468, 6.09398, 6.13338, 6.17298,
+    6.21268, 6.25258, 6.28319};
+
+bool contacts[numberContactWindows];
 
 // File Parameters
 std::ofstream file;

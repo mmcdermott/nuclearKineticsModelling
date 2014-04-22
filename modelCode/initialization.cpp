@@ -57,11 +57,6 @@ void setToBasePos() {
   basePosD[0] = proNucPos[0] - cosinePrt;
   basePosD[1] = proNucPos[1] - sinePrt;
 
-  effRegionAngles.clear();
-  effRegionProbabilities.clear();
-  effRegionAngles.assign(regionAngles, regionAngles + numRegions+1);
-  effRegionProbabilities.assign(regionProbabilities,regionProbabilities + numRegions);
-
   for (unsigned i = 0; i < MT_numb; ++i) {
     //MTs:
     //Constructing the 4 random numbers necessary per MT.
@@ -120,4 +115,6 @@ void setup() {
   file.open(fileName);
   writeParams();
   setToBasePos();
+  for (size_t i = 0; i < numberContactWindows-1; i++)
+    contacts[i] = false;
 }

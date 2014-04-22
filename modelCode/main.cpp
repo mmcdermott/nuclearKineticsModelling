@@ -45,26 +45,6 @@ ostream& operator<<(ostream& out, const float_T (&rhs)[MT_numb]) {
   return out;
 }
 
-void printRegionStats(string precursor, float_T angle, string where) {
-  string prep = "==============================";
-  prep = (prep.append(prep)).append(prep);
-  if (where == "before")
-    cout << prep << endl;
-  cout << precursor << " " << angle << "!" << endl;
-  cout << "Effective Regions: " << endl << "region [0, ";
-  vector<float_T>::iterator itA = ++effRegionAngles.begin();
-  vector<float_T>::iterator itP = effRegionProbabilities.begin();
-  for (; itA != effRegionAngles.end(); itA++, itP++) {
-    cout << *itA << ") with probability " << *itP << endl << "region [";
-    cout << *itA << ", ";
-  }
-  cout << "2*pi)." << endl;
-  if (where == "after")
-    cout << prep << endl << endl << endl;
-  else 
-    cout << endl;
-}
-
 void writeData(const float_T t) {
   file << t <<","<< proNucPos <<","<< psi <<","<<  MT_Pos_M <<",";
   file << MT_Pos_D <<","<< force_M <<","<< force_D <<","<< force <<",";
@@ -78,166 +58,6 @@ void writeFinalData() {
 
 void writePartialData(const float_T t) {
   file<<t<<","<<proNucPos <<","<< psi <<","<< basePosM <<","<< basePosD << endl;
-}
-
-void updateRegionProbabilitiesD(const float_T angle) {
-  //An MT Detached, now we need to remove some regions. 
-  float_T low = angle - contactWindow;
-  float_T high = angle + contactWindow;
-  bool metHigh = true;
-  if (low < 0) {
-    low += 2*pi;
-    high += 2*pi;
-    metHigh = false;
-  } 
-  vector<float_T>::iterator itA = ++effRegionAngles.begin();
-  vector<float_T>::iterator itP = ++effRegionProbabilities.begin();
-  if ((fabs(low) <= .00001)) {
-    itP--;
-    (*itP) *= (1/probabilityFactor);
-    if (*itP > 1) {
-      cout << "UH-OH! I'm making a probability bigger than 1." << endl;
-      (*itP) *= probabilityFactor;
-      printRegionStats("I'm trying to remove a contact at",angle,"none");
-      (*itP) *= (1/probabilityFactor);
-      printRegionStats("After I adjust for low bound of ",low,"none");
-      assert((*itP) <= 1);
-    }
-    itP++;
-  } else {
-    for (; itA != effRegionAngles.end(); itA++, itP++) {
-      if (fabs(low - *itA) <= .00001) {
-        itA = effRegionAngles.erase(itA);
-        itP = effRegionProbabilities.erase(itP);
-        break;
-      } else {
-        //cout << "|low - *itA| = " << fabs(low - *itA) << endl;
-      }
-    }
-  }
-  //cout << "hey look here " << *itA << endl;
-  for (; itA != effRegionAngles.end(); itA++,itP++) {
-    if (fabs(high - *itA) <= .00001) {
-      itA = effRegionAngles.erase(itA);
-      itP = effRegionProbabilities.erase(itP);
-      metHigh = true;
-      break;
-    } else {
-      (*itP) *= (1/probabilityFactor);
-      if (*itP > 1) {
-        cout << "UH-OH! I'm making a probability bigger than 1." << endl;
-        (*itP) *= probabilityFactor;
-        printRegionStats("I'm trying to remove a contact at",angle,"none");
-        (*itP) *= (1/probabilityFactor);
-        printRegionStats("After I adjust for intermediate region ending at ",*itA,"none");
-        assert((*itP) <= 1);
-      }
-    }
-  }
-  if (!metHigh) {
-    high -= 2*pi;
-    itA = ++effRegionAngles.begin();
-    itP = effRegionProbabilities.begin();
-    for (; itA != effRegionAngles.end(); itA++,itP++) {
-      if (fabs(high - *itA) <= .00001) {
-        itP = effRegionProbabilities.erase(itP);
-        itA = effRegionAngles.erase(itA);
-        metHigh = true;
-        break;
-      } else {
-        (*itP) *= (1/probabilityFactor);
-        if (*itP > 1) {
-          cout << "UH-OH! I'm making a probability bigger than 1." << endl;
-          (*itP) *= probabilityFactor;
-          printRegionStats("I'm trying to remove a contact at",angle,"none");
-          (*itP) *= (1/probabilityFactor);
-          printRegionStats("After I adjust for region ending at ",*itA,"none");
-          assert((*itP) <= 1);
-        }
-      }
-    }
-  }
-}
-
-void insertAndScale(float_T low, float_T high) {
-  if (low < 0) {
-    low += 2*pi; 
-    high += 2*pi;
-  } 
-  bool metHigh = false;
-  vector<float_T>::iterator itA = ++effRegionAngles.begin();
-  vector<float_T>::iterator itP = effRegionProbabilities.begin();
-  if (low == 0) {
-    (*itP) *= probabilityFactor;
-    itA--;
-  } else {
-    for (; itA != effRegionAngles.end(); itA++, itP++) {
-      float_T oldProb = *itP;
-      if (low < *itA) {
-        itA = effRegionAngles.insert(itA, low);
-
-        float_T newProb = oldProb * probabilityFactor;
-        itP++;
-        itP = effRegionProbabilities.insert(itP,newProb);
-        break;
-      } else if (low == *itA) {
-        (*itP) *= probabilityFactor;
-        break;
-      }
-    }
-  }
-  itA++;
-  for (; itA != effRegionAngles.end(); itA++,itP++) {
-    float_T oldProb = *itP;
-    if (high < *itA) {
-      itA = effRegionAngles.insert(itA,high);
-
-      float_T newProb = oldProb/probabilityFactor ;
-      if (newProb > 1) {
-        cout << "UH-OH! I'm making a probability bigger than 1." << endl;
-        printRegionStats("I'm adding the high for a contact at",(low + high)/2,"none");
-        assert(newProb <= 1);
-      }
-      itP++;
-      itP = effRegionProbabilities.insert(itP, newProb);
-
-      metHigh = true;
-      break;
-    } else if (high == *itA) {
-      metHigh = true;
-      break;
-    } else {
-      itP++;
-      (*itP) *= probabilityFactor;
-      itP--;
-    }
-  }
-  if (!metHigh) {
-    high -= 2*pi;
-    itA = ++effRegionAngles.begin();
-    itP = effRegionProbabilities.begin();
-    for (; itA != effRegionAngles.end(); itA++,itP++) {
-      float_T oldProb = *itP;
-      if (high < *itA) {
-        itA = effRegionAngles.insert(itA,high);
-
-        float_T newProb = oldProb * probabilityFactor;
-        itP = effRegionProbabilities.insert(itP, newProb);
-
-        metHigh = true;
-        break;
-      } else if (high == *itA) {
-        (*itP) *= probabilityFactor;
-      } else {
-        (*itP) *= probabilityFactor;
-      }
-    }
-  }
-}
-
-void updateRegionProbabilities(const float_T angle) {
-  //An MT Attached, now we need to update some regions. 
-  insertAndScale(angle - contactWindow, angle + contactWindow);
 }
 
 void mtForceCalc(const vec_T (&mtEndPos)[MT_numb], const vec_T &basePos, const
@@ -378,20 +198,35 @@ float_T probContact(float_T ang, const char centrosome) {
   //string descrEnd = " connecting at";
   //stringstream ss;
   //ss << "I just found probability ";
-  for (size_t i = 1; i < effRegionAngles.size(); i++) {
-    if (ang < effRegionAngles[i]){
-      if (fabs(effRegionAngles[i]-ang - contactWindow) <= 0.00001) return 0;
-      //float_T prob = effRegionProbabilities[i-1];
-      //ss << prob << descrEnd;
-      //printRegionStats(ss.str(), ang, "none");
-      assert(effRegionProbabilities[i-1] <= 1);
-      return effRegionProbabilities[i-1];
+  for (size_t i = 1; i < numberContactWindows; i++) {
+    if (ang < contactWindowAngles[i] && contacts[i]){
+      return 0;
     }
   }
-  //    if (regionProbabilities[i-1] != 1)
-  //      return regionProbabilities[i-1];
+  for (size_t i = 1; i < numRegions; i++) 
+    if (ang < regionAngles[i]) 
+      return regionProbabilities[i-1];
   return 0;
 }
+
+void updateContacts(const float_T angle) {
+  for (size_t i = 1; i < numberContactWindows; i++) {
+    if (angle < contactWindowAngles[i]){
+      assert(!contacts[i-1]);
+      contacts[i-1] = true;
+    }
+  }
+}
+
+void removeContact(const float_T angle) {
+  for (size_t i = 1; i < numberContactWindows; i++) {
+    if (angle < contactWindowAngles[i]){
+      assert(contacts[i-1]);
+      contacts[i-1] = false;
+    }
+  }
+}
+
 
 void mtContactTest(const char centrosome, const unsigned i) {
   float_T angleM, angleD;
@@ -403,7 +238,7 @@ void mtContactTest(const char centrosome, const unsigned i) {
         MT_GrowthVel_M[i] = 0;
         MT_Contact_M[i]   = contact_length;
         MT_Growing_M[i]   = false;
-        updateRegionProbabilities(angleM);
+        updateContacts(angleM);
       } else {
         MT_GrowthVel_M[i] = -Vs_c;
         MT_Growing_M[i]   = false;
@@ -416,7 +251,7 @@ void mtContactTest(const char centrosome, const unsigned i) {
         MT_GrowthVel_D[i] = 0;
         MT_Contact_D[i]   = contact_length;
         MT_Growing_D[i]   = false;
-        updateRegionProbabilities(angleD);
+        updateContacts(angleD);
       } else {
         MT_GrowthVel_D[i] = -Vs_c;
         MT_Growing_D[i]   = false;
@@ -563,7 +398,7 @@ void runModel(bool writeAllData, bool writeTempData) {
           MT_GrowthVel_M[i] = -Vs_c;
           float_T angleM = atan2(MT_Pos_M[i][1],MT_Pos_M[i][0]);
           if (angleM < 0) angleM += 2*pi;
-          updateRegionProbabilitiesD(angleM);
+          removeContact(angleM);
         }
       } else  if (magScaledM >= 1) {
         mtContactTest('M',i);
@@ -575,7 +410,7 @@ void runModel(bool writeAllData, bool writeTempData) {
           MT_GrowthVel_D[i] = -Vs_c;
           float_T angleD = atan2(MT_Pos_D[i][1],MT_Pos_D[i][0]);
           if (angleD < 0) angleD += 2*pi;
-          updateRegionProbabilitiesD(angleD);
+          removeContact(angleD);
         }
       } else  if (magScaledD >= 1) {
         mtContactTest('D',i);
@@ -602,16 +437,10 @@ void test() {
   vector<float_T> anglesToAdd = {pi/128.0, pi/2.0, pi/64, pi/32, pi/16, pi/8, pi/4, pi/2};
 
   for (auto ang : anglesToAdd) {
-    printRegionStats("About to connect at", ang, "before");
-    updateRegionProbabilities(ang);
-    printRegionStats("Just connected at", ang, "after");
   }
 
   vector<float_T> anglesToRemove = {pi/2.0, pi/2.0};
   for (auto ang : anglesToRemove) {
-    printRegionStats("About to dis-connect at", ang, "before");
-    updateRegionProbabilities(ang);
-    printRegionStats("Just dis-connected at", ang, "after");
   }
 }
 
