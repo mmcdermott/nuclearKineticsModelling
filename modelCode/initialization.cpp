@@ -56,11 +56,11 @@ void setToBasePos() {
   basePosM[1] = proNucPos[1] + sinePrt;
   basePosD[0] = proNucPos[0] - cosinePrt;
   basePosD[1] = proNucPos[1] - sinePrt;
-  // = springAnchorM[0];
-  // = springAnchorM[1];
-  // = springAnchorD[0];
-  // = springAnchorD[1];
 
+  effRegionAngles.clear();
+  effRegionProbabilities.clear();
+  effRegionAngles.assign(regionAngles, regionAngles + numRegions+1);
+  effRegionProbabilities.assign(regionProbabilities,regionProbabilities + numRegions);
 
   for (unsigned i = 0; i < MT_numb; ++i) {
     //MTs:

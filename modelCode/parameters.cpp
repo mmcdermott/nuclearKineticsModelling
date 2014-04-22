@@ -19,7 +19,7 @@ const bool translation = true;
 const bool ONLY_COMMA = true;
 
 //Parameters
-const float_T Duration = 10;         //duration in minutes
+const float_T Duration = 15;         //duration in minutes
 const float_T Tau      = 1.0/4000.0; //time step in minutes
 
 // MT Parameters
@@ -70,8 +70,8 @@ const float_T kbT    = .00414;   //pN mum
 const float_T D      = kbT/Eta2; //Diffusion Coefficient for centrosome motion. (mum^2/min)
 
 //  Starting Coordinates:
-const float_T startPsi = pi/2.0;// + pi/8.0;
-const float_T startX   = 0;//8.5;
+const float_T startPsi = pi/2.0 + pi/8.0;
+const float_T startX   = 8.5;
 const float_T startY   = 0;
 
 //  General Coordinate Initializations: 
@@ -97,27 +97,24 @@ vec_T proNucPos;
 //    This defines the probabilities associated with the regions defined by the
 //    regionAngles variable. It has length one less than the regionAngles
 //    vector, as it is broken up into regions, not enpoints of regions. 
-const int numRegions = 1;
-//float_T start = 3*pi/16.0;
-//float_T end = 4.5*pi/16.0;
-//const float_T regionAngles[numRegions+1] = {0, start, end, 2*pi - end, 2*pi - start, 2*pi};
-//const float_T regionProbabilities[numRegions] = {1,1,1,1,1};
-//const float_T regionForceMultipliers[numRegions] = {1,-1,1,-1,1};
-//
-//float_T alpha = 3*pi/8.0;
-//const float_T regionAngles[numRegions + 1] = {0, alpha, 2*pi - alpha, 2*pi};
+const int numRegions = 5;
+float_T start = 3*pi/16.0;
+float_T end = 4.5*pi/16.0;
+const float_T regionAngles[numRegions+1] = {0, start, end, 2*pi - end, 2*pi - start, 2*pi};
+const float_T regionProbabilities[numRegions] = {1,1,1,1,1};
+const float_T regionForceMultipliers[numRegions] = {1,-1,1,-1,1};
 //const float_T regionProbabilities[numRegions] = {0.5, 1, 0.5};
-const float_T regionAngles[numRegions + 1] = {0, 2*pi};
-const float_T regionProbabilities[numRegions] = {1};
-const float_T regionForceMultipliers[numRegions] = {1};
+//const float_T regionAngles[numRegions + 1] = {0, 2*pi};
+//const float_T regionProbabilities[numRegions] = {1};
+//const float_T regionForceMultipliers[numRegions] = {1};
 // MT density limitations
-const float_T contactWindow = pi/32.0;
-const float_T probabilityFactor = 0;//1/2.0;
-int effectiveNumRegions;
+const float_T contactWindow = pi/64.0;
+const float_T probabilityFactor = 1/2.0;
+//int effectiveNumRegions;
 //Need dynamically sized containers here. 
-std::vector<float_T> effRegionAngles = {0, 2*pi};
-std::vector<float_T> effRegionProbabilities = {1};
-std::vector<float_T> effRegionMultipliers = {1};
+std::vector<float_T> effRegionAngles = {0, start, end, 2*pi - end, 2*pi - start, 2*pi};
+std::vector<float_T> effRegionProbabilities = {1,1,1,1,1};
+//std::vector<float_T> effRegionMultipliers = {1};
 
 // File Parameters
 std::ofstream file;

@@ -5,7 +5,7 @@
 if (exist('numRuns') == 0)
     numRuns = 100;
 end
-dataDir = '../data/hist-data/';
+dataDir = '../data/histData/';
 run parameters
 csvrange = [rowStart colStart rowStart+numRuns-1 colStart+2]; 
 DATA = csvread(dataFileFull,rowStart,colStart,csvrange);
