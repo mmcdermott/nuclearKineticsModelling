@@ -115,6 +115,6 @@ void setup() {
   file.open(fileName);
   writeParams();
   setToBasePos();
-  for (size_t i = 0; i < numberContactWindows-1; i++)
+  for (size_t i = 0; i < numberContactWindows; i++)
     contacts[i] = false;
 }

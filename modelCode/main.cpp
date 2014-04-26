@@ -194,35 +194,42 @@ void advanceMT(const float_T vel, vec_T& vec, const float_T mag) {
 }
 
 float_T probContact(float_T ang, const char centrosome) {
-  //for (size_t i = 1; i <= numRegions; ++i)
-  //string descrEnd = " connecting at";
-  //stringstream ss;
-  //ss << "I just found probability ";
-  for (size_t i = 1; i < numberContactWindows; i++) {
-    if (ang < contactWindowAngles[i] && contacts[i]){
-      return 0;
+  for (size_t i = 1; i <= numberContactWindows; i++) {
+    if (ang < contactWindowAngles[i]) {
+      if (contacts[i-1]) return 0;
+      else break;
     }
   }
-  for (size_t i = 1; i < numRegions; i++) 
-    if (ang < regionAngles[i]) 
+  for (size_t i = 1; i <= numRegions; i++) {
+    if (ang < regionAngles[i]) {
       return regionProbabilities[i-1];
-  return 0;
+    }
+  }
+  cout << "This is a problem! I've worked through all regions and am still ";
+  cout << "trying to determine the probability of contact at angle " << ang;
+  cout << "! I'm going to throw an error!" << endl;
+  throw;
+  return 1;
 }
 
-void updateContacts(const float_T angle) {
-  for (size_t i = 1; i < numberContactWindows; i++) {
+void addContact(const float_T angle) {
+  //cout << "Making Contact at angle " << angle << endl;
+  for (size_t i = 1; i <= numberContactWindows; i++) {
     if (angle < contactWindowAngles[i]){
       assert(!contacts[i-1]);
       contacts[i-1] = true;
+      break;
     }
   }
 }
 
 void removeContact(const float_T angle) {
-  for (size_t i = 1; i < numberContactWindows; i++) {
+  //cout << "Removing Contact at angle " << angle << endl;
+  for (size_t i = 1; i <= numberContactWindows; i++) {
     if (angle < contactWindowAngles[i]){
       assert(contacts[i-1]);
       contacts[i-1] = false;
+      break;
     }
   }
 }
@@ -235,10 +242,11 @@ void mtContactTest(const char centrosome, const unsigned i) {
       angleM = atan2(MT_Pos_M[i][1],MT_Pos_M[i][0]);
       if (angleM < 0) angleM += 2*pi; //atan2 returns negative vals.
       if (testStat() < probContact(angleM,'M')) {
+        //cout << "Making Contact at Angle " << angleM << endl;
         MT_GrowthVel_M[i] = 0;
         MT_Contact_M[i]   = contact_length;
         MT_Growing_M[i]   = false;
-        updateContacts(angleM);
+        addContact(angleM);
       } else {
         MT_GrowthVel_M[i] = -Vs_c;
         MT_Growing_M[i]   = false;
@@ -248,10 +256,11 @@ void mtContactTest(const char centrosome, const unsigned i) {
       angleD = atan2(MT_Pos_D[i][1],MT_Pos_D[i][0]);
       if (angleD < 0) angleD += 2*pi; //atan2 returns negative vals.
       if (testStat() < probContact(angleD,'D')) {
+        //cout << "Making Contact at Angle " << angleD << endl;
         MT_GrowthVel_D[i] = 0;
         MT_Contact_D[i]   = contact_length;
         MT_Growing_D[i]   = false;
-        updateContacts(angleD);
+        addContact(angleD);
       } else {
         MT_GrowthVel_D[i] = -Vs_c;
         MT_Growing_D[i]   = false;
@@ -412,7 +421,7 @@ void runModel(bool writeAllData, bool writeTempData) {
           if (angleD < 0) angleD += 2*pi;
           removeContact(angleD);
         }
-      } else  if (magScaledD >= 1) {
+      } else if (magScaledD >= 1) {
         mtContactTest('D',i);
       }
     }
@@ -433,14 +442,26 @@ void usage() {
   cout << "./main [number of runs = 1] [fileName = {MT#}-MT.csv]" << endl;
 }
 
+int numContacts() {
+  unsigned int count = 0;
+  for (size_t i = 0; i < numberContactWindows; i++)
+    count += contacts[i];
+  return count;
+}
+
 void test() {
-  vector<float_T> anglesToAdd = {pi/128.0, pi/2.0, pi/64, pi/32, pi/16, pi/8, pi/4, pi/2};
-
-  for (auto ang : anglesToAdd) {
-  }
-
-  vector<float_T> anglesToRemove = {pi/2.0, pi/2.0};
-  for (auto ang : anglesToRemove) {
+  cout << "Currently, there are " << numContacts() << " contacts." << endl;
+  setup();
+  cout << "After setup(), there are " << numContacts() << " contacts." << endl;
+  vector<float_T> anglesToAdd = {2,4,6,5,3,1,0.6};
+  vector<float_T> anglesToRemove = {0.6,1,3,4,6,5,2};
+  for (size_t i = 0; i < anglesToAdd.size(); i++) {
+    float_T angle = anglesToAdd[i];
+    cout << "Angle: " << angle << endl;
+    cout << "Probability of Contact from M: " << probContact(angle,'M') << endl;
+    cout << "Probability of Contact from D: " << probContact(angle,'D') << endl;
+    addContact(angle);
+    cout << "Number of Contacts after Making Contact: " << numContacts()<<endl;
   }
 }
 
@@ -468,12 +489,12 @@ int main(int argc, const char* argv[]) {
     usage();
     return 1;
   }
-  //test();
   setup();
 
   for (int run = 0; run < numRuns; ++run) {
     runModel(writeAllData,writeTempData);
     setToBasePos();
   }
+  //test();
   return 0;
 }
