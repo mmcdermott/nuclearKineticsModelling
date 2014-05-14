@@ -5,6 +5,9 @@
 #include <fstream>
 #include <assert.h>
 #include <cstring>
+#include <limits>
+
+typedef std::numeric_limits< float_T >flt;
 
 using namespace std;
 
@@ -90,7 +93,7 @@ void netMTForce(char centrosome) {
   //assert(centrosome == 'M' || centrosome == 'D')
   switch (centrosome) {
     case 'M':
-      mtForceCalc(MT_Pos_M, basePosM, MT_Contact_M, force_M, 0.95*F_MT);
+      mtForceCalc(MT_Pos_M, basePosM, MT_Contact_M, force_M, Fratio*F_MT);
       break;
     case 'D':
       mtForceCalc(MT_Pos_D, basePosD, MT_Contact_D, force_D, F_MT);
@@ -194,6 +197,9 @@ void advanceMT(const float_T vel, vec_T& vec, const float_T mag) {
 }
 
 float_T probContact(float_T ang, const char centrosome) {
+  //if (fabs(ang-2*pi) <= 0.0001) {
+  //  ang = 0;
+  //}
   for (size_t i = 1; i <= numberContactWindows; i++) {
     if (ang < contactWindowAngles[i]) {
       if (contacts[i-1]) return 0;
@@ -206,17 +212,26 @@ float_T probContact(float_T ang, const char centrosome) {
     }
   }
   cout << "This is a problem! I've worked through all regions and am still ";
-  cout << "trying to determine the probability of contact at angle " << ang;
-  cout << "! I'm going to throw an error!" << endl;
-  throw;
-  return 1;
+  cout << "trying to determine the probability of contact at angle " << fixed;
+  cout << ang << "! I'm going to just return 0!" << endl;
+  return 0;
 }
 
 void addContact(const float_T angle) {
   //cout << "Making Contact at angle " << angle << endl;
   for (size_t i = 1; i <= numberContactWindows; i++) {
     if (angle < contactWindowAngles[i]){
-      assert(!contacts[i-1]);
+      if (contacts[i-1]) {
+        cout.precision(flt::digits10);
+        cout << endl;
+        cout << "Hey! I tried to add to an already contacted window?";
+        cout << " Why is that!";
+        cout << endl << "Angle of attempted contact: " << fixed << angle;
+        cout << endl;
+        cout << "Window in question: [" << fixed << contactWindowAngles[i-1];
+        cout << ", " << contactWindowAngles[i] << "]." << endl;
+        cout << "Setting it to true and moving on." << endl;
+      }
       contacts[i-1] = true;
       break;
     }
@@ -227,7 +242,16 @@ void removeContact(const float_T angle) {
   //cout << "Removing Contact at angle " << angle << endl;
   for (size_t i = 1; i <= numberContactWindows; i++) {
     if (angle < contactWindowAngles[i]){
-      assert(contacts[i-1]);
+      if (!contacts[i-1]) {
+        cout.precision(flt::digits10);
+        cout << endl;
+        cout << "Hey! I tried to remove a non-existent contact? Why is that!";
+        cout << endl << "Angle of attempted contact: " << fixed << angle;
+        cout << endl;
+        cout << "Window in question: [" << fixed << contactWindowAngles[i-1];
+        cout << ", " << contactWindowAngles[i] << "]." << endl;
+        cout << "Setting it to false and moving on." << endl;
+      }
       contacts[i-1] = false;
       break;
     }
@@ -354,10 +378,18 @@ void runModel(bool writeAllData, bool writeTempData) {
       float_T thetaM = angleM - (psi - pi/2.0);
       float_T thetaD = angleD - (psi + pi/2.0);
 
-      if (mag_M < 0.2 || ((thetaM < envelopeM[0]) || (thetaM > envelopeM[1])))
+      if (mag_M < 0.1) {
+        //TODO if ((thetaM < envelopeM[0]) || (thetaM > envelopeM[1])))
+        if (MT_Contact_M[i] > 0)
+          removeContact(angleM);
         respawnMT('M', vecM, i, envelopeM);
-      if (mag_D < 0.2 || ((thetaD < envelopeD[0]) || (thetaD > envelopeD[1])))
+      }
+      if (mag_D < 0.1) {
+        //if ((thetaD < envelopeD[0]) || (thetaD > envelopeD[1])))
+        if (MT_Contact_D[i] > 0) 
+          removeContact(angleD);
         respawnMT('D', vecD, i, envelopeD);
+      }
 
       //Growing or Shrinking the MT. 
       advanceMT(MT_GrowthVel_M[i], vecM, mag_M);
@@ -372,7 +404,7 @@ void runModel(bool writeAllData, bool writeTempData) {
       //Now, for state updating, I'll need a random number. 
       float_T test = testStat();
       if (MT_Growing_M[i]) {
-        if (test < Pr_catastrophe && mag_M > 0.4) {
+        if (test < Pr_catastrophe && mag_M > 0.4) { //TODO: Why is the mag_M thing here?
           MT_Growing_M[i]   = false;
           MT_GrowthVel_M[i] = -Vs;
         }

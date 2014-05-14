@@ -64,9 +64,9 @@ void setToBasePos() {
     // Suffix *M* means mother, *D* means daughter.
     //
     // TODO: Implement Distribution (Boost ?)
-    float_T randMR = 100*((float_T) rand())/((float_T) RAND_MAX);  //Random Values
+    float_T randMR = 20*((float_T) rand())/((float_T) RAND_MAX);  //Random Values
     float_T randMT = ((float_T) rand())/((float_T) RAND_MAX);  //Random Values
-    float_T randDR = 100*((float_T) rand())/((float_T) RAND_MAX);  //Random Values
+    float_T randDR = 20*((float_T) rand())/((float_T) RAND_MAX);  //Random Values
     float_T randDT = ((float_T) rand())/((float_T) RAND_MAX);  //Random Values
     //std::cout << "randMR: " << randMR << std::endl;
     //std::cout << "randMT: " << randMT << std::endl;
@@ -94,6 +94,8 @@ void setToBasePos() {
     MT_Contact_M[i] = 0;
     MT_Contact_D[i] = 0;
   }
+  for (size_t i = 0; i < numberContactWindows; i++)
+    contacts[i] = false;
 }
 
 void setup() {
@@ -115,6 +117,4 @@ void setup() {
   file.open(fileName);
   writeParams();
   setToBasePos();
-  for (size_t i = 0; i < numberContactWindows; i++)
-    contacts[i] = false;
 }
