@@ -9,22 +9,22 @@ bandPrefix="const float_T width = "
 
 mEnvs="pi 2*pi"
 translations="true false"
-envWidths="pi\/2 pi\/2.5 pi\/3.5 pi\/6 pi\/7 pi\/8 pi\/9 pi\/10 pi\/11 pi\/12 pi\/13 pi\/14 pi\/15 pi\/16 pi\/17 pi\/18"
+envWidths="pi"
 bandWidths="pi\/2 pi\/2.5 pi\/3 pi\/3.5 pi\/4 pi\/5 pi\/6 pi\/7 pi\/8 pi\/9 pi\/10 pi\/11 pi\/12 pi\/13 pi\/14 pi\/15 pi\/16 pi\/17 pi\/18"
 
 mEnvDirs="mEnvP/ mEnv2P/"
 mEnvDirs=($mEnvDirs)
 translationDirs="translation/ noTranslation/"
 translationDirs=($translationDirs)
-envWidthFiles="ewPo2 ewPo2.5 ewPo3.5 ewPo6 ewPo7 ewPo8 ewPo9 ewPo10 ewPo11 ewPo12 ewPo13 ewPo14 ewPo15 ewPo16 ewPo17 ewPo18"
+envWidthFiles="ewP"
 envWidthFiles=($envWidthFiles)
 bandWidthFiles="bwPo2 bwPo2.5 bwPo3 bwPo3.5 bwPo4 bwPo5 bwPo6 bwPo7 bwPo8 bwPo9 bwPo10 bwPo11 bwPo12 bwPo13 bwPo14 bwPo15 bwPo16 bwPo17 bwPo18"
 bandWidthFiles=($bandWidthFiles)
 
-prevMEnv="pi"
+prevMEnv="2*pi"
 prevTranslation="true"
-prevEnv="2\*pi\/3"
-prevBand="pi\/2"
+prevEnv="pi\/18"
+prevBand="pi\/18"
 
 mEnvCount=0
 declare -i mEnvCount

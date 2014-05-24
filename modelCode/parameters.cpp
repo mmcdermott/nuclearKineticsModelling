@@ -15,7 +15,7 @@ bool spitValues = false;
 
 //Type Parameters
 const bool springsOn = false;
-const bool translation = true;
+const bool translation = false;
 const bool ONLY_COMMA = true;
 
 //Parameters
@@ -54,9 +54,9 @@ float_T torque_M;
 float_T torque_D;
 float_T torque;
 //   Envelope Parameters
-const float_T envWidthM = pi;
+const float_T envWidthM = 2*pi;
 const vec_T envelopeM = {pi/2.0 - envWidthM/2.0, pi/2.0 + envWidthM/2.0}; // The envelope in which MTs from M can grow. 
-const float_T envWidthD = pi/2.5;
+const float_T envWidthD = pi;
 const vec_T envelopeD = {pi/2.0 - envWidthD/2.0, pi/2.0 + envWidthD/2.0}; // The envelope in which MTs from M can grow. 
 //   Spring Parameters
 const float_T kM = 8;
@@ -109,7 +109,7 @@ vec_T proNucPos;
 
 //Standard Bands:
 const int numRegions = 5;
-const float_T width = pi/2.5;
+const float_T width = pi/17;
 const float_T centerPos = 1.24287;
 const float_T start = centerPos - width/2.0;
 const float_T end = centerPos + width/2.0;
