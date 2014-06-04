@@ -7,16 +7,18 @@
 #include <time.h>
 #include <math.h>
 #include <random>
+#include "Vector.hpp"
 
-typedef double float_T;
-typedef float_T vec_T[2];
+//typedef double float_T; (See Vector.hpp)
+//typedef float_T vec_T[2];
+typedef Vector vec_T;
 const float_T pi = 3.1415926535897;
 bool spitValues = false;
 
 //Type Parameters
-const bool motherSpringOn = false;
-const bool daughterSpringOn = false;
-const bool translation = false;
+const bool motherSpringOn = true;
+const bool daughterSpringOn = true;
+const bool translation = true;
 const bool ONLY_COMMA = true;
 
 //Parameters
@@ -56,9 +58,9 @@ float_T torque_D;
 float_T torque;
 //   Envelope Parameters
 const float_T envWidthM = 2*pi;
-const vec_T envelopeM = {pi/2.0 - envWidthM/2.0, pi/2.0 + envWidthM/2.0}; // The envelope in which MTs from M can grow. 
-const float_T envWidthD = pi;
-const vec_T envelopeD = {pi/2.0 - envWidthD/2.0, pi/2.0 + envWidthD/2.0}; // The envelope in which MTs from M can grow. 
+const float_T envelopeM[2] = {pi/2.0 - envWidthM/2.0, pi/2.0 + envWidthM/2.0}; // The envelope in which MTs from M can grow. 
+const float_T envWidthD = pi/6;
+const float_T envelopeD[2] = {pi/2.0 - envWidthD/2.0, pi/2.0 + envWidthD/2.0}; // The envelope in which MTs from M can grow. 
 //   Spring Parameters
 const float_T kM = 8;
 const float_T kD = 16;
@@ -110,7 +112,7 @@ vec_T proNucPos;
 
 //Standard Bands:
 const int numRegions = 5;
-const float_T width = pi/17;
+const float_T width = pi/4;
 const float_T centerPos = 1.24287;
 const float_T start = centerPos - width/2.0;
 const float_T end = centerPos + width/2.0;

@@ -15,6 +15,10 @@ float_T testStat() {
   return ((float_T) rand())/((float_T) RAND_MAX);
 }
 
+float_T distBetween(vec_T a, vec_T b) {
+    return sqrt(pow(a[0] - b[0],2) + pow(a[1] - b[1],2));
+}
+
 ostream& operator<<(ostream& out, const vec_T& rhs) {
   if (ONLY_COMMA) {
     out << rhs[0] << "," << rhs[1];
@@ -123,6 +127,13 @@ void updatePNPos() {
     // Adding the springForce.
     force_M[0] += springForceM[0];
     force_M[1] += springForceM[1];
+    if (distBetween(proNucPos, basePosM) < Prad + 0.1) {
+      // Reflection Force:
+      vec_T radius;
+      radius[0] = springAnchorM[0] - proNucPos[0];
+      radius[1] = springAnchorM[1] - proNucPos[1];
+      //  Compute Projection of force_M onto radius:
+    }
 
     force[0] -= springForceM[0];
     force[1] -= springForceM[1];
@@ -324,7 +335,7 @@ void mtContactTest(const char centrosome, const unsigned i) {
   }
 }
 
-void respawnMTB(vec_T& vec, const float_T ang, const vec_T& envelope) {
+void respawnMTB(vec_T& vec, const float_T ang, const float_T envelope[2]) {
   float_T randR = testStat();  
   float_T randT = testStat();
   float_T r     = sqrt(randR);
@@ -333,7 +344,7 @@ void respawnMTB(vec_T& vec, const float_T ang, const vec_T& envelope) {
   vec[1]        = r*sin(t);
 }
 
-void respawnMT(const char centrosome, vec_T& vec, const unsigned i, const vec_T& envelope) {
+void respawnMT(const char centrosome, vec_T& vec, const unsigned i, const float_T envelope[2]) {
   //assert(centrosome == 'M' || centrosome == 'D')
   switch (centrosome) {
     case 'M':
@@ -352,7 +363,7 @@ void respawnMT(const char centrosome, vec_T& vec, const unsigned i, const vec_T&
 }
 
 bool checkBoundary() {
-    float_t dist = sqrt(pow(proNucPos[0]/(R1_max - Prad - .5),2) +
+    float_T dist = sqrt(pow(proNucPos[0]/(R1_max - Prad - .5),2) +
                         pow(proNucPos[1]/(R2_max-Prad - .5),2));
     return dist >= 1;
 }
@@ -366,7 +377,7 @@ void runModel(bool writeAllData, bool writeTempData) {
     writePartialData(0);
     nextWrite += writeInterval;
   }
-  for (float_t t=0; t <= Duration; t += Tau) {
+  for (float_T t=0; t <= Duration; t += Tau) {
     if (t > 400*Tau) {
       spitValues = false;
     }

@@ -6,7 +6,10 @@ TARGETS = clean mtKineticModel
 
 all: $(TARGETS)
 
-mtKineticModel: main.o
+mtKineticModel: Vector.o main.o
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+vectorTest: Vector.o vectorTest.o
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 clean: 
