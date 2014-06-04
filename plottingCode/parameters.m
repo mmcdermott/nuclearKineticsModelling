@@ -1,10 +1,10 @@
 %Parameters: 
 %  Data Parameters: 
 dataFileSuffix = '.csv';
-if (exist('dataDir') == 0)
+if (exist('dataDir','var') == 0)
     dataDir = '../data/';
 end
-if (exist('dataFile') == 0) 
+if (exist('dataFile','var') == 0) 
     dataFileFull = [dataDir '2-MT' dataFileSuffix];
 else 
     dataFileFull = [dataDir dataFile dataFileSuffix];

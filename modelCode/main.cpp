@@ -86,7 +86,6 @@ void mtForceCalc(const vec_T (&mtEndPos)[MT_numb], const vec_T &basePos, const
   }
   force[0] *= forceMag;
   force[1] *= forceMag;
-  //TODO: Include spring force F(x) = -kx
 }
 
 void netMTForce(char centrosome) {
@@ -107,38 +106,31 @@ void updatePNPos() {
   float_T cosinePrt  = Prad*cos(psi);
   float_T sinePrt    = Prad*sin(psi);
 
-  if (springsOn) {
+  force[0] = 0;
+  force[1] = 0;
+  if (motherSpringOn) {
     //These compute the force on the centrosomes via the MT, which affects the
     //basePos
     netMTForce('M');
-    netMTForce('D');
 
-    vec_T springAnchorM, springAnchorD, springForceM, springForceD;
+    vec_T springAnchorM, springForceM;
     springAnchorM[0] = proNucPos[0] + cosinePrt;
     springAnchorM[1] = proNucPos[1] + sinePrt;
-    springAnchorD[0] = proNucPos[0] - cosinePrt;
-    springAnchorD[1] = proNucPos[1] - sinePrt;
     //This computes the Spring Forces (which evenly affect the centrosomes and
     //pronucleus
     springForceM[0] = kM*(springAnchorM[0]-basePosM[0]);
     springForceM[1] = kM*(springAnchorM[1]-basePosM[1]);
-    springForceD[0] = kD*(springAnchorD[0]-basePosD[0]);
-    springForceD[1] = kD*(springAnchorD[1]-basePosD[1]);
     // Adding the springForce.
     force_M[0] += springForceM[0];
     force_M[1] += springForceM[1];
-    force_D[0] += springForceD[0];
-    force_D[1] += springForceD[1];
-    //Now to compute the force on the ProNucleus. 
-    force[0] = -(springForceM[0] + springForceD[0]);
-    force[1] = -(springForceM[1] + springForceD[1]);
+
+    force[0] -= springForceM[0];
+    force[1] -= springForceM[1];
     //Note that we can see that the angle between positive torque and the true x
     //axis is \psi + \pi/2. Further, the angle between positive torque and the 
     //true y is \psi. The daughter entails a \pi switch, which merely negates
     //things. Thus, 
-    torque_M          =  springForceM[0]*sinePrt - springForceM[1]*cosinePrt;
-    torque_D          = -springForceD[0]*sinePrt + springForceD[1]*cosinePrt;
-    torque            = torque_M + torque_D;
+    torque_M   =  springForceM[0]*sinePrt - springForceM[1]*cosinePrt;
 
     // Updating Basepos: 
     // Base-pos obeys equation \eta_2 dx/dt = F + \xi,
@@ -152,36 +144,75 @@ void updatePNPos() {
     float_T xiXM      = randNumXM*sqrt(2*D*Tau);
     float_T xiYM      = randNumYM*sqrt(2*D*Tau);
 
+    basePosM[0]  += force_M[0]*(1.0/Eta2)*Tau + xiXM;
+    basePosM[1]  += force_M[1]*(1.0/Eta2)*Tau + xiYM;
+  } else {
+    basePosM[0] = proNucPos[0] + cosinePrt;
+    basePosM[1] = proNucPos[1] + sinePrt;
+
+    //These compute the force on the centrosomes via the MTs
+    netMTForce('M');
+    if (spitValues) {
+      cout << "Y-force on M: " << force_M[1] << endl;
+    }
+    force[0] += force_M[0];
+    force[1] += force_M[1];
+
+    torque_M          = -force_M[0]*sinePrt + force_M[1]*cosinePrt;
+  }
+  if (daughterSpringOn) {
+    //These compute the force on the centrosomes via the MT, which affects the
+    //basePos
+    netMTForce('D');
+
+    vec_T springAnchorD, springForceD;
+    springAnchorD[0] = proNucPos[0] - cosinePrt;
+    springAnchorD[1] = proNucPos[1] - sinePrt;
+    //This computes the Spring Forces (which evenly affect the centrosomes and
+    //pronucleus
+    springForceD[0] = kD*(springAnchorD[0]-basePosD[0]);
+    springForceD[1] = kD*(springAnchorD[1]-basePosD[1]);
+    // Adding the springForce.
+    force_D[0] += springForceD[0];
+    force_D[1] += springForceD[1];
+
+    force[0] -= springForceD[0];
+    force[1] -= springForceD[1];
+    //Note that we can see that the angle between positive torque and the true x
+    //axis is \psi + \pi/2. Further, the angle between positive torque and the 
+    //true y is \psi. The daughter entails a \pi switch, which merely negates
+    //things. Thus, 
+    torque_D = -springForceD[0]*sinePrt + springForceD[1]*cosinePrt;
+
+    // Updating Basepos: 
+    // Base-pos obeys equation \eta_2 dx/dt = F + \xi,
+    // where \xi is a random noise parameter on the order of \sqrt{2D \tau}. To
+    // generate \xi, take a random number P from norm(0,1) and take 
+    // P*\sqrt{2D\tau}. We don't know what \eta_2 is, that is a parameter to be
+    // set, but D = kB*T/\eta_2. As an estimate, try setting \nu_2 to one 10th
+    // the pronucleus drag coefficient. 
     float_T randNumXD = stdNormalDist(generator);
     float_T randNumYD = stdNormalDist(generator);
     float_T xiXD      = randNumXD*sqrt(2*D*Tau);
     float_T xiYD      = randNumYD*sqrt(2*D*Tau);
 
-    basePosM[0]  += force_M[0]*(1.0/Eta2)*Tau + xiXM;
-    basePosM[1]  += force_M[1]*(1.0/Eta2)*Tau + xiYM;
-    basePosD[0]  += force_D[0]*(1.0/Eta2)*Tau + xiXD;
-    basePosD[1]  += force_D[1]*(1.0/Eta2)*Tau + xiYD;
+    basePosD[0] += force_D[0]*(1.0/Eta2)*Tau + xiXD;
+    basePosD[1] += force_D[1]*(1.0/Eta2)*Tau + xiYD;
   } else {
-    basePosM[0] = proNucPos[0] + cosinePrt;
-    basePosM[1] = proNucPos[1] + sinePrt;
     basePosD[0] = proNucPos[0] - cosinePrt;
     basePosD[1] = proNucPos[1] - sinePrt;
 
     //These compute the force on the centrosomes via the MTs
-    netMTForce('M');
     netMTForce('D');
     if (spitValues) {
-      cout << "Y-force on M: " << force_M[1] << endl;
       cout << "Y-force on D: " << force_D[1] << endl;
     }
+    force[0] += force_D[0];
+    force[1] += force_D[1];
 
-    force[0] = force_M[0] + force_D[0];
-    force[1] = force_M[1] + force_D[1];
-
-    torque_M          = -force_M[0]*sinePrt + force_M[1]*cosinePrt;
     torque_D          = force_D[0]*sinePrt - force_D[1]*cosinePrt;
-    torque            = torque_M + torque_D;
   }
+  torque            = torque_M + torque_D;
 
   //Calculating Displacements:
   if (translation) {

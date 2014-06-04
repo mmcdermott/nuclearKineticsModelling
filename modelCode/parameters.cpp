@@ -14,7 +14,8 @@ const float_T pi = 3.1415926535897;
 bool spitValues = false;
 
 //Type Parameters
-const bool springsOn = false;
+const bool motherSpringOn = false;
+const bool daughterSpringOn = false;
 const bool translation = false;
 const bool ONLY_COMMA = true;
 
