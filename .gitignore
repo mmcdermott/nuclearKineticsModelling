@@ -14,6 +14,7 @@
 
 # Executables
 mtKineticModel
+vectorTest
 main
 
 # Tex files
@@ -27,3 +28,7 @@ main
 
 # Images
 *.jpg
+
+# Temp Files
+*~
+*.swp
