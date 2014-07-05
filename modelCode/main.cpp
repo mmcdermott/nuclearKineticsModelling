@@ -11,7 +11,7 @@ typedef std::numeric_limits< float_T >flt;
 
 using namespace std;
 
-float_T testStat() {
+inline float_T testStat() {
   /* testStat(): A function to generate a test statistic.
    * Input: None
    * Output: A uniform random float_T between 0 and 1
@@ -169,25 +169,25 @@ void mtForceCalc(const vec_T (&mtEndPos)[MT_numb], const vec_T &basePos, const
   force *= forceMag;
 }
 
-void netMTForce(const char centrosome) {
+void netMTForce(const MTOC centrosome) {
   /* netMTForce: This is a wrapper for computing the net force on an MTOC. In
    *   reality, one only needs to specify for which MTOC they want to compute
    *   the forces in order to perform the computations in the function above, so
    *   this function takes that parameter, then fills in the remaining
    *   parameters automatically. 
    * Inputs: 
-   *   const char centrosome: This parameter specifies which MTOC we care about
+   *   const MTOC centrosome: This parameter specifies which MTOC we care about
    *     here.
    * Outputs: (none, because we update the stored global force values instead)
    */
   //assert(centrosome == 'M' || centrosome == 'D')
   switch (centrosome) {
-    case 'M':
+    case M_CENTROSOME:
       //If we care about the mother, then we need to use the M parameters, and
       //multiply the force magnitude by the Fratio parameter. 
       mtForceCalc(MT_Pos_M, basePosM, MT_Contact_M, force_M, Fratio*F_MT);
       break;
-    case 'D':
+    case D_CENTROSOME:
       //If we care about the daughter, then we need to use the D parameters. 
       mtForceCalc(MT_Pos_D, basePosD, MT_Contact_D, force_D, F_MT);
       break;
@@ -202,20 +202,18 @@ void updatePNPos() {
    *   code. Maybe find a way to abstract some of it away? 
    */
 
-  //First, we'll compute the radius vector of the Pronucleus, which arbitrarily
-  //I've decided goes from the origin of the pronucleus to the mother spring
-  //MTOC anchor point. 
+  //First, we'll compute the radius vector of the Pronucleus, which I've 
+  //arbitrarily decided goes from the origin of the pronucleus to the mother
+  //spring MTOC anchor point. 
   vec_T proNucRad({Prad*cos(psi), Prad*sin(psi)});
- // float_T cosinePrt  = Prad*cos(psi);
- // float_T sinePrt    = Prad*sin(psi);
 
   //Now, we zero out the force vector. 
   force.zero();
 
   //First to compute the net forces on the MTOCs (recall, these calls will
   //update the force_M and force_D values.
-  netMTForce('M');
-  netMTForce('D');
+  netMTForce(M_CENTROSOME);
+  netMTForce(D_CENTROSOME);
   //Now we need to care about which springs are on. 
   if (motherSpringOn) {
     //Now computing the position of the springAnchor...
@@ -418,25 +416,27 @@ void removeContact(const float_T angle) {
 }
 
 
-void mtContactTest(const char centrosome, const unsigned i) {
+void mtContactTest(const MTOC centrosome, const unsigned i) {
   /* mtContactTest: This performs a total test for MT contact for the ith MT off
    *   of the centrosome MTOC. Contact occurs if the test is successful, in this
    *   function. 
    * Inputs: 
-   *   const char centrosome: This specifies from which MTOC the tested MT
+   *   const MTOC centrosome: This specifies from which MTOC the tested MT
    *     grows.
    *   const unsigned i: This specifies which MT is testing for contact.
    * Outputs: (none, but global values are changed). 
    */
-  //First, declaring some angles we will specify. 
+
+  //First, let's declare some angles we'll use. 
   float_T angleM, angleD;
   switch (centrosome) {
     //We need to determine which centrosome we care about here. 
-    case 'M':
+    case M_CENTROSOME:
+      //3D WARNING: The code below is used to determine the point of contact on
+      //the cortex. It only works in 2D right now. 
       angleM = atan2(MT_Pos_M[i][1],MT_Pos_M[i][0]);
       if (angleM < 0) angleM += 2*pi; //atan2 returns negative vals.
       if (testStat() < probContact(angleM)) {
-        //cout << "Making Contact at Angle " << angleM << endl;
         MT_GrowthVel_M[i] = 0;
         MT_Contact_M[i]   = contact_length;
         MT_Growing_M[i]   = false;
@@ -446,11 +446,12 @@ void mtContactTest(const char centrosome, const unsigned i) {
         MT_Growing_M[i]   = false;
       }
       break;
-    case 'D':
+    case D_CENTROSOME:
+      //3D WARNING: The code below is used to determine the point of contact on
+      //the cortex. It only works in 2D right now. 
       angleD = atan2(MT_Pos_D[i][1],MT_Pos_D[i][0]);
       if (angleD < 0) angleD += 2*pi; //atan2 returns negative vals.
       if (testStat() < probContact(angleD)) {
-        //cout << "Making Contact at Angle " << angleD << endl;
         MT_GrowthVel_D[i] = 0;
         MT_Contact_D[i]   = contact_length;
         MT_Growing_D[i]   = false;
@@ -464,24 +465,47 @@ void mtContactTest(const char centrosome, const unsigned i) {
 }
 
 void respawnMTB(vec_T& vec, const float_T ang, const float_T envelope[2]) {
+  /* respawnMTB: This function is the base respawn function for an MT. We have
+   *   wrappers to call this for an explicit MT of MTOC M or D below. 
+   * Inputs: 
+   *   vec_T& vec: This is the MT vector that is to be respawned. 
+   *   const float_T ang: This is the angular coordinate of the appropriate
+   *     MTOC.
+   *   const float_T envelope[2]: This stores the angular envelope for MT
+   *     growth. 
+   * Outputs: (none, but the reference vec is updated). 
+   */
+
   float_T randR = testStat();  
   float_T randT = testStat();
   float_T r     = sqrt(randR);
   float_T t     = (envelope[1]-envelope[0])*randT + ang + envelope[0] - pi/2.0;
-  vec[0]        = r*cos(t);
-  vec[1]        = r*sin(t);
+  vec           = Vector({r*cos(t),r*sin(t)});
 }
 
-void respawnMT(const char centrosome, vec_T& vec, const unsigned i, const float_T envelope[2]) {
-  //assert(centrosome == 'M' || centrosome == 'D')
+void respawnMT(const MTOC centrosome, vec_T& vec, const unsigned int i,
+               const float_T envelope[2]) {
+  /* respawnMT: This function is the MTOC explicit wrapper function for
+   *   respawnMTB above.  
+   * Inputs: 
+   *   const MTOC centrosome: This specifies the centrosome of the MT in
+   *     question. 
+   *   const unsigned int i: This specifies which MT of the many associated with
+   *     MTOC centrosome is respawning. 
+   *   const float_T envelope[2]: This specifies the allowed angular envelope of
+   *     MT growth. 
+   * Outputs: (none, but globals are updated). 
+   */
+
+  //The centrosome better be either M or D. 
   switch (centrosome) {
-    case 'M':
+    case M_CENTROSOME:
       respawnMTB(vec, psi, envelope);
       MT_Growing_M[i]   = true;
       MT_GrowthVel_M[i] = Vg;
       MT_Contact_M[i]   = 0;
       break;
-    case 'D':
+    case D_CENTROSOME:
       respawnMTB(vec, psi + pi, envelope);
       MT_Growing_D[i]   = true;
       MT_GrowthVel_D[i] = Vg;
@@ -490,33 +514,65 @@ void respawnMT(const char centrosome, vec_T& vec, const unsigned i, const float_
   }
 }
 
-bool checkBoundary() {
-    float_T dist = sqrt(pow(proNucPos[0]/(R1_max - Prad - .5),2) +
-                        pow(proNucPos[1]/(R2_max-Prad - .5),2));
-    return dist >= 1;
+inline bool checkBoundary() {
+  /* checkBoundary: This functions estimates if the pronucleus has impacted on
+   *   the cortex. It estimates because that typically does a good enough job,
+   *   and doing the exact calculation would be very difficult. 3D WARNING: This
+   *   function is explicitly a 2D implementation. It's inline because its very
+   *   short and called in the loop, so making it inline will make the program
+   *   slightly more efficient. 
+   * Inputs: (none)
+   * Output: If the pronucleus has impacted the boundary.
+   */
+  float_T dist = sqrt(pow(proNucPos[0]/(R1_max - Prad - .5),2) +
+                      pow(proNucPos[1]/(R2_max-Prad - .5),2));
+  return dist >= 1;
 }
 
 void runModel(bool writeAllData, bool writeTempData) {
+  /* runModel: This function actually runs the model and records the data as
+   *   specified by the user. 
+   * Inputs: 
+   *   bool writeAllData: This specifies whether or not to write all data.
+   *   bool writeTempData: This specifies whether or not to write data every 30
+   *     seconds or not. 
+   * Output: (none, but globals are altered)
+   * Issues: The handling of data writing parameters is inefficient, but not
+   *   enough to cause any issues, really. 
+   */
+
+  //First, we set up the data writing parameters: 
   float_T nextWrite = 0;
   float_T writeInterval = 0.5;
   if (writeAllData) {
+    //We only need to write the full data if writeAllData is true. 
     writeData(0);
   } else if (writeTempData) {
+    //If we're writing temporary data, then we can just write the partial data
+    //and then note when we'll record data next. 
     writePartialData(0);
     nextWrite += writeInterval;
   }
+
+  //Now we run the model. 
   for (float_T t=0; t <= Duration; t += Tau) {
+    //Even if debugging info is desired, it will rarely be so after 400
+    //iterations...
     if (t > 400*Tau) {
       spitValues = false;
     }
+
+    //We need to ensure we're still in the cell; if not, we should exit. TODO:
+    //improve these exit conditions, and/or induce a reflection force. 
     if (checkBoundary())
       break;
-    while (psi >= 2*pi) {
+
+    //Now we normalize the angle. 
+    while (psi >= 2*pi)
       psi -= 2*pi;
-    } 
-    while (psi < 0) {
+    while (psi < 0)
       psi += 2*pi;
-    }
+
     //As MT_numb \to \infty, we'll have to calculate force/torque more and more
     //often. As such, we'll just go ahead and calculate it every time here. 
     updatePNPos();
@@ -526,17 +582,17 @@ void runModel(bool writeAllData, bool writeTempData) {
       //These are the relative positions of the MTs
       vec_T vecM, vecD;
       //Setting them properly. 
-      vecM[0] = MT_Pos_M[i][0] - basePosM[0];
-      vecM[1] = MT_Pos_M[i][1] - basePosM[1];
-      vecD[0] = MT_Pos_D[i][0] - basePosD[0];
-      vecD[1] = MT_Pos_D[i][1] - basePosD[1];
+      vecM = MT_Pos_M[i] - basePosM;
+      vecD = MT_Pos_D[i] - basePosD;
 
       //Grabbing their relative magnitudes. 
-      float_T mag_M = sqrt(pow(vecM[0], 2) + pow(vecM[1], 2));
-      float_T mag_D = sqrt(pow(vecD[0], 2) + pow(vecD[1], 2));
+      float_T mag_M = vecM.norm();
+      float_T mag_D = vecD.norm();
 
       //Respawning if necessary. First, we need to compute the angular position
-      //of the MT relative to the pronucleus. 
+      //of the MT relative to the pronucleus. 3D WARNING: This is explicitly 2D,
+      //by relying on and computing angles as opposed to general cortex
+      //positions. 
       float_T angleM = atan2(vecM[1],vecM[0]);
       if (angleM < 0) angleM += 2*pi;
       float_T angleD = atan2(vecD[1],vecD[0]);
@@ -549,16 +605,17 @@ void runModel(bool writeAllData, bool writeTempData) {
       float_T thetaD = angleD - (psi + pi/2.0);
 
       if (mag_M < 0.1) {
-        //TODO if ((thetaM < envelopeM[0]) || (thetaM > envelopeM[1])))
+        //TODO: maybe handle out of envelope MTs in a better way? Currently, we
+        //do nothing. 
         if (MT_Contact_M[i] > 0)
           removeContact(angleM);
-        respawnMT('M', vecM, i, envelopeM);
+        respawnMT(M_CENTROSOME, vecM, i, envelopeM);
       }
       if (mag_D < 0.1) {
         //if ((thetaD < envelopeD[0]) || (thetaD > envelopeD[1])))
         if (MT_Contact_D[i] > 0) 
           removeContact(angleD);
-        respawnMT('D', vecD, i, envelopeD);
+        respawnMT(D_CENTROSOME, vecD, i, envelopeD);
       }
 
       //Growing or Shrinking the MT. 
@@ -572,9 +629,14 @@ void runModel(bool writeAllData, bool writeTempData) {
       MT_Pos_D[i][1] = basePosD[1] + vecD[1];
 
       //Now, for state updating, I'll need a random number. 
-      float_T test = testStat();
+      //For modularity, I'll declare the stat first. 
+      float_T test;
+
+      test = testStat();
       if (MT_Growing_M[i]) {
-        if (test < Pr_catastrophe && mag_M > 0.4) { //TODO: Why is the mag_M thing here?
+        if (test < Pr_catastrophe && mag_M > 0.4) { 
+          //TODO: Is the length condition needed here? Why can't they
+          //catastrophe if they are too short?
           MT_Growing_M[i]   = false;
           MT_GrowthVel_M[i] = -Vs;
         }
@@ -584,6 +646,7 @@ void runModel(bool writeAllData, bool writeTempData) {
           MT_GrowthVel_M[i] = Vg;
         }
       }
+
       test = testStat();
       if (MT_Growing_D[i]) {
         if (test < Pr_catastrophe && mag_D > 0.4) {
@@ -597,14 +660,23 @@ void runModel(bool writeAllData, bool writeTempData) {
         }
       }
 
-      //Computing their scaled real magnitudes (scaled via the ellipse). 
-      float_T magScaledM=sqrt(pow(MT_Pos_M[i][0]/R1_max,2)+pow(MT_Pos_M[i][1]/R2_max,2));
-      float_T magScaledD=sqrt(pow(MT_Pos_D[i][0]/R1_max,2)+pow(MT_Pos_D[i][1]/R2_max,2));
+      //Computing their scaled real magnitudes (scaled via the ellipse), so as
+      //to determine if a contact has occurred.  
+      float_T magScaledM = sqrt(pow(MT_Pos_M[i][0]/R1_max,2) + 
+                                pow(MT_Pos_M[i][1]/R2_max,2));
+      float_T magScaledD = sqrt(pow(MT_Pos_D[i][0]/R1_max,2) + 
+                                pow(MT_Pos_D[i][1]/R2_max,2));
 
       //Updating Contact Indicator:
       if (MT_Contact_M[i] > 0) {
+        //If we've already made contact, then we need to reduce the contact time
+        //by the length of the time step. 
         MT_Contact_M[i] -= Tau;
         if (MT_Contact_M[i] <= 0) {
+          //But, occasionally, this will actually drop our proposed contact time
+          //down into the negatives. We need to correct for that. Moreover, we
+          //can combine that with the case where we hit zero right on the head,
+          //and just handle the overall contact-ended case here. 
           MT_Contact_M[i] = 0;
           MT_GrowthVel_M[i] = -Vs_c;
           float_T angleM = atan2(MT_Pos_M[i][1],MT_Pos_M[i][0]);
@@ -612,8 +684,12 @@ void runModel(bool writeAllData, bool writeTempData) {
           removeContact(angleM);
         }
       } else  if (magScaledM >= 1) {
-        mtContactTest('M',i);
+        //If we haven't made contact, but are touching the cortex, we will test
+        //for contact. 
+        mtContactTest(M_CENTROSOME, i);
       }
+      //The if clause below is identical to the one above, just for the D
+      //centrosome over the M centrosome. 
       if (MT_Contact_D[i] > 0) {
         MT_Contact_D[i] -= Tau;
         if (MT_Contact_D[i] <= 0) {
@@ -624,27 +700,40 @@ void runModel(bool writeAllData, bool writeTempData) {
           removeContact(angleD);
         }
       } else if (magScaledD >= 1) {
-        mtContactTest('D',i);
+        mtContactTest(D_CENTROSOME, i);
       }
     }
+    //Now we just need to write our data for this run (if we're supposed to).
     if (writeAllData) {
-      writeData(t+Tau);
+      writeData(t + Tau);
     } else if (writeTempData && (t > nextWrite)) {
-      writePartialData(t+Tau);
+      writePartialData(t + Tau);
       nextWrite += writeInterval;
     }
   }
+  //We've finished running the model; time to (potentially) write the final
+  //data. 
   if (!(writeAllData || writeTempData)) {
     writeFinalData();
   }
 }
 
 void usage() {
+  /* usage: This function prints a usage string. 
+   * Inputs: (none)
+   * Output: (none)
+   */
   cout << "Usage: " << endl;
-  cout << "./main [number of runs = 1] [fileName = {MT#}-MT.csv]" << endl;
+  //TODO: Update this usage string.
+  cout << "./main [number of runs = 1] [fileName = {MT#}-MT]" << endl;
 }
 
 int numContacts() {
+  /* numContacts: This function computes the number of total contacts made
+   *   across the cortex. 
+   * Inputs: (none)
+   * Output: The number of contacts. 
+   */
   unsigned int count = 0;
   for (size_t i = 0; i < numberContactWindows; i++)
     count += contacts[i];
@@ -652,22 +741,21 @@ int numContacts() {
 }
 
 void test() {
-  cout << "Currently, there are " << numContacts() << " contacts." << endl;
-  setup();
-  cout << "After setup(), there are " << numContacts() << " contacts." << endl;
-  vector<float_T> anglesToAdd = {2,4,6,5,3,1,0.6};
-  vector<float_T> anglesToRemove = {0.6,1,3,4,6,5,2};
-  for (size_t i = 0; i < anglesToAdd.size(); i++) {
-    float_T angle = anglesToAdd[i];
-    cout << "Angle: " << angle << endl;
-    cout << "Probability of Contact from M: " << probContact(angle) << endl;
-    cout << "Probability of Contact from D: " << probContact(angle) << endl;
-    addContact(angle);
-    cout << "Number of Contacts after Making Contact: " << numContacts()<<endl;
-  }
+  /* test: This is a dummy function useful for testing changes to the code. 
+   * Inputs: (none, currently)
+   * Output: (none, currently)
+   */
 }
 
 int main(int argc, const char* argv[]) {
+  /* main: This is the main function, run when you call the program as an
+   *   executable from the command line. 
+   * Inputs: 
+   *   int argc: The number of arguments passed to the command line call to this
+   *     function. 
+   *   const char* argv[]: The arguments, encoded as an array of c-strings. 
+   * Output: The return code for this program as a command line executable. 
+   */
   int numRuns;
   bool writeAllData = false;
   bool writeTempData = false;
@@ -694,6 +782,8 @@ int main(int argc, const char* argv[]) {
   setup();
 
   for (int run = 0; run < numRuns; ++run) {
+    //We want to run the model a set number of times, but after each run, we
+    //must reset the parameters to the starting configuration. 
     runModel(writeAllData,writeTempData);
     setToBasePos();
   }
