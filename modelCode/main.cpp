@@ -601,15 +601,14 @@ void runModel(bool writeAllData, bool writeTempData) {
       float_T thetaM = angleM - (psi - pi/2.0);
       float_T thetaD = angleD - (psi + pi/2.0);
 
+      //MT-ENV: Different MT growth envelope handling would go here, though it
+      //currently isn't used beyond spawning new MTS.
       if (mag_M < 0.1) {
-        //TODO: maybe handle out of envelope MTs in a better way? Currently, we
-        //do nothing. 
         if (MT_Contact_M[i] > 0)
           removeContact(angleM);
         respawnMT(M_CENTROSOME, vecM, i, envelopeM);
       }
       if (mag_D < 0.1) {
-        //if ((thetaD < envelopeD[0]) || (thetaD > envelopeD[1])))
         if (MT_Contact_D[i] > 0) 
           removeContact(angleD);
         respawnMT(D_CENTROSOME, vecD, i, envelopeD);
@@ -722,7 +721,7 @@ void usage() {
    */
   cout << "Usage: " << endl;
   //TODO: Update this usage string.
-  cout << "./main [number of runs = 1] [fileName = {MT#}-MT]" << endl;
+  cout << "./mtKineticModel <Number of Runs> <Output File> [temp/all]" << endl;
 }
 
 int numContacts() {

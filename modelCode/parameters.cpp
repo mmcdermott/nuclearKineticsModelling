@@ -110,6 +110,10 @@ vec_T proNucPos;
 //    This defines the probabilities associated with the regions defined by the
 //    regionAngles variable. It has length one less than the regionAngles
 //    vector, as it is broken up into regions, not enpoints of regions. 
+//  regionForceMultipliers: 
+//    This defines the force multipliers associated with the regions defined by
+//    the regionAngles variable. It has length one less than the regionAngles
+//    vector, as it is broken up into regions, not enpoints of regions. 
 
 //No Bands:
 const int numRegions = 1;

@@ -1,3 +1,4 @@
+% arara: pdflatex
 \documentclass{article}
 \usepackage{amsmath}
 \usepackage{hyperref}
@@ -45,7 +46,7 @@
   runs of the given system the model should produce and \texttt{<Output File>}
   specifies the file to which the results should be written. Note that this file
   will be placed in the directory \texttt{nuclearKineticsModelling/data}. The
-  final paramterer, \texttt{[temp/all]}, is an optional parameter. If omitted,
+  final parameter, \texttt{[temp/all]}, is an optional parameter. If omitted,
   the system will only store the final configuration of the system in the result
   file. If given as \texttt{temp}, it will store 30 second time slices in the
   result system for each model run, in sequence (i.e. it will list various
@@ -114,18 +115,95 @@ number of MTs, updating these through growth, shortening, and respawning when
 necessary. It also uses the same risk formulas for catastrophe and rescue as did
 the previous matlab model. The only real differences are that several bugs are
 corrected, force and torque are calculated upon every iteration directly, and
-the implementation outputs final data to a file for another program to read in. 
+the implementation outputs final data to a file for another program to read in.
+It is worth noting that the current implementation has a separate, abstracted
+Vector class to handle vector addition, scalar multiplication, taking
+projections and finding the norm. This makes the code more readable, but also
+enables a much easier switch from 2D to 3D. In fact, the Vector class itself is
+dimension independent (as in, it is set \texttt{Vector.hpp} but can be changed
+without consequence) so moving to a 3D model really only amounts to modifying
+the cortex positioning code. 
 \subsection{Implementation Details}
+\subsubsection{MT Envelope Restriction:}
+In this code, there is a parameter which specifies the allowed envelope of
+growth for MTs from either the mother MTOC or the daughter MTOC (separately).
+This is accessed via the variable \texttt{envWidthM(D)} and
+\texttt{envelopeM(D)}. For standard envelopes, simply setting the width should
+be sufficient (as this actually is used in the \texttt{envelope} parameter) but
+for stranger cases, it is also possible to just modify the \texttt{envelope}
+parameter directly and set the envelope that way. We have tried and discussed a
+number of ways to use this parameter, but have finally settled upon the idea
+that the envelope merely limits growth. In particular, a new MT can only be
+spawned within the allowed envelope (meaning spawned at an angle contained in
+the range specified by the \texttt{envelope} parameter, with 0 degrees being the
+angle of rotation of the MTOC anchor point relative to the pronucleus) but an MT
+that falls outside of this envelope as the pronucleus rotates is allowed to
+continue to grow, connect, and catastrophe as normal. If this needs to be
+changed, see line 604 of \texttt{main.cpp}, near the comment beginning with
+\texttt{MT-ENV}, which is just before the length-based respawning code. 
+\subsubsection{Spring Implementations:}
+Currently there is built in spring capabilities that can be activated with or
+without pushing forces on either MTOC separately that do account for potential
+contact and resulting force transfer with the pronucleus. The springs are turned
+on or off in the two boolean parameters \texttt{motherSpringOn} and
+\texttt{daughterSpringOn} in the file \texttt{parameters.cpp}. If a spring is
+on, then the motion of that MTOC is governed by three things: the forces from
+the associated MTs, the spring force between the MTOC and its anchor point
+(using current displacement), and a random displacement term. Note that this is
+altered slightly if the MTOC is close enough to the pronucleus. In that case,
+the spring force directed towards the pronucleus is reflected by the pronucleus,
+inducing a force on the MTOC away from the pronucleus and on the pronucleus away
+from the MTOC. Note, however, that this \textbf{does not} imply that the MTOC
+experiences a \emph{net} force away from the pronucleus. This is not a
+reflection collision event; rather, the force from the MTOC towards the
+pronucleus is effectively just \emph{transferred} to the pronucleus. The force
+induced by the pronucleus on the MTOC is completely balanced out by the initial
+force towards the pronucleus on the MTOC in the first place, resulting in only
+net tangential forces on the MTOC after contact. Similarly, in this case, the
+random displacement is only allowed to occur tangentially. Note that when the
+spring is enabled, there is no \emph{direct} action on the pronucleus by the
+MTs. Rather, the MTs induce a force on the MTOC, which moves, thus inducing a
+spring force on the pronucleus (and itself, in opposite magnitude) the next
+timestep. Thus, the pronucleus is only ever directly moved by the spring with
+this model. 
+\subsubsection{Boundary Checking:}
+The current system checks for a cortex pronucleus collision and a MTOC
+pronucleus collision using slightly different methods. For the MTOC pronucleus
+collision, the system simply determines if the MTOC is within \texttt{Prad +
+0.1} of the pronucleus position, using simple vector arithmetic. For the
+pronucleus cortex collision, the system must do something slightly stranger.
+Here, the system determines if the center of the pronucleus has impacted a
+slightly smaller ellipse than the cortex. This doesn't give exactly the desired
+behavior, as the curvature makes this slightly inaccurate, but in practice it is
+quite effective. 
+\subsubsection{MT Connection Density Limitation:}
+The system maintains a collection of windows, within each is only allowed one
+contact. The contact windows are computed in mathematica, and stored in the
+\texttt{parameters.cpp} file as plain values. There is another, finer set of
+windows which is commented out in this file as well. 
+\subsubsection{Band Specification:}
+The band specification is very straightforward. A list of fixed cortex angles
+are stored, beginning with $0$ and ending with $2\pi$. These specify the
+endpoints of all ``cortex pieces,'' which are angular, uniform sectors of the
+cortex. This is stored in \texttt{regionAngles}. The probability of contact in
+these areas and force multipliers scaling contacts in these areas are stored in
+\texttt{regionProbabilities} and \texttt{regionForceMultipliers}, respectively.
+These are each one component shorter than \texttt{regionAngles}, as index
+\texttt{i} of the probability and multiplier vectors describe the effect on the
+region between angles \texttt{regionAngles[i]} and \texttt{regionAngles[i+1]}. 
+\subsubsection{Other Miscellaneous Notes:}
 \begin{itemize}
   \item It is important to the current implementation that \texttt{mt\_numb} is
     a constant value, as otherwise fixed-size arrays could not be used to store
     all the codes data. 
   \item The \texttt{parameters.cpp} file defines not only fixed constants for
-    the program, but also initializes global variables and sets up two very
-    import \texttt{typedef}s. The first sets a new \texttt{float\_T} type, which
-    is used so that precision of the model can be altered painlessly, and the
-    second creates a \texttt{vec\_T} type, which is used so that arrays of
-    \texttt{float\_T}s are easy to create. 
+    the program, but also initializes global variables, a few  import
+    \texttt{typedef}s, and an \texttt{enum} that defines the centrosome options.
+    The first typedef sets up a new \texttt{float\_T} type, which is used so
+    that precision of the model can be altered painlessly, and the second wraps
+    the separate \texttt{Vector} class type with a \texttt{vec\_T} type, which
+    is actually not needed anymore and could be removed, so long as all the code
+    was updated to use \texttt{Vector} instead of \texttt{vec\_T}. 
   \item The two \texttt{operator} functions at the top of \texttt{main.cpp} are
     merely to aid in file output. 
   \item The net force calc function is simple; It merely sums up the all the force
