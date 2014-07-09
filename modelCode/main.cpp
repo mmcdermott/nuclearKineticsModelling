@@ -12,8 +12,7 @@ typedef std::numeric_limits< float_T >flt;
 using namespace std;
 
 inline float_T testStat() {
-  /* A function to generate a test statistic. Declared *inline* as it is small
-   * and used frequently, so this should improve code efficiency. 
+  /* testStat(): A function to generate a test statistic.
    * Input: None
    * Output: A uniform random float_T between 0 and 1
    */
@@ -21,10 +20,8 @@ inline float_T testStat() {
 }
 
 ostream& operator<<(ostream& out, const vec_T& rhs) {
-  /* A wrapper to write a vector to an output stream. This can't be encapsulated
-   * by class logic as it depends on the ONLY_COMMA parameter here. Though,
-   * given that it's always on, perhaps that is something that could be
-   * improved... TODO.
+  /* operator<<(ostream, vec_T): A wrapper to write a vector to an output
+   *   stream.
    * Inputs: 
    *   ostream& out: The stream to which rhs should be written. 
    *   const vec_T& rhs: The Vector that should be written.
@@ -40,7 +37,8 @@ ostream& operator<<(ostream& out, const vec_T& rhs) {
 }
 
 ostream& operator<<(ostream& out, const vec_T (&rhs)[MT_numb]) {
-  /* A wrapper to write an array of vectors to an output stream.
+  /* operator<<(ostream, vec_T[MT_numb]): A wrapper to write an array of vectors
+   *   to an output stream.
    * Inputs: 
    *   ostream& out: The stream to which rhs should be written. 
    *   const vec_T (&rhs)[MT_numb]: The array of vectors that should be written
@@ -59,7 +57,8 @@ ostream& operator<<(ostream& out, const vec_T (&rhs)[MT_numb]) {
 }
 
 ostream& operator<<(ostream& out, const float_T (&rhs)[MT_numb]) {
-  /* A wrapper to write an array of floats to an output stream.
+  /* operator<<(ostream, float_T[MT_numb]): A wrapper to write an array of floats
+   *   to an output stream.
    * Inputs: 
    *   ostream& out: The stream to which rhs should be written. 
    *   const vec_T (&rhs)[MT_numb]: The array of floats that should be written
@@ -78,7 +77,7 @@ ostream& operator<<(ostream& out, const float_T (&rhs)[MT_numb]) {
 }
 
 void writeData(const float_T t) {
-  /* A function that writes all relevant data to the data file
+  /* writeData: A function that writes all relevant data to the data file
    * Inputs:
    *   const float_T t: The simulation time at which the points are being
    *     written.
@@ -91,7 +90,8 @@ void writeData(const float_T t) {
 }
 
 void writeFinalData() {
-  /* A function that writes the end position data to the data file.
+  /* writeFinalData: A function that writes the end position data to the data
+   *   file.
    * Inputs: (none)
    * Output: (none)
    */
@@ -99,7 +99,8 @@ void writeFinalData() {
 }
 
 void writePartialData(const float_T t) {
-  /* A function that writes some relevant positional data to the data file
+  /* writePartialData: A function that writes some relevant positional data to 
+   *   the data file
    * Inputs:
    *   const float_T t: The simulation time at which the points are being
    *     written.
@@ -111,8 +112,8 @@ void writePartialData(const float_T t) {
 void mtForceCalc(const vec_T (&mtEndPos)[MT_numb], const vec_T &basePos, const
     float_T (&mtContact)[MT_numb], vec_T &force, const float_T forceMag = F_MT) 
 {
-  /* A function which computes the force on an MTOC implied by the cortical
-   *   pushing and pulling forces due to the MTs. 
+  /* mtForceCalc: A function which computes the force on an MTOC implied by the
+   *   cortical pushing and pulling forces due to the MTs. 
    * Inputs: 
    *   const vec_T (&mtEndPos)[MT_numb]: A reference to an array of end mt
    *     positions. Basically, this tells the function where to look to find the
@@ -169,11 +170,11 @@ void mtForceCalc(const vec_T (&mtEndPos)[MT_numb], const vec_T &basePos, const
 }
 
 void netMTForce(const MTOC centrosome) {
-  /* This is a wrapper for computing the net force on an MTOC. In reality, one
-   *   only needs to specify for which MTOC they want to compute the forces in
-   *   order to perform the computations in the function above, so this function
-   *   takes that parameter, then fills in the remaining parameters
-   *   automatically. 
+  /* netMTForce: This is a wrapper for computing the net force on an MTOC. In
+   *   reality, one only needs to specify for which MTOC they want to compute
+   *   the forces in order to perform the computations in the function above, so
+   *   this function takes that parameter, then fills in the remaining
+   *   parameters automatically. 
    * Inputs: 
    *   const MTOC centrosome: This parameter specifies which MTOC we care about
    *     here.
@@ -194,7 +195,7 @@ void netMTForce(const MTOC centrosome) {
 }
 
 void updatePNPos() {
-  /* This functions updates the pronuclear position.
+  /* updatePNPos: This functions updates the pronuclear position.
    * Inputs: (none)
    * Outputs: (none, though it changes various global parameters)
    * Issues: (TODO) This is rather inelegant, especially with all the repeated
@@ -318,7 +319,7 @@ void updatePNPos() {
 }
 
 void advanceMT(const float_T vel, vec_T& vec, const float_T mag) {
-  /* This grows or shrinks an MT according to velocity.
+  /* advanceMT: This grows or shrinks an MT according to velocity
    * Inputs: 
    *   const float_T vel: This is the growth velocity (can be negative)
    *   vec_T& vec: This is the vector of the MT, which must be updated via
@@ -330,7 +331,8 @@ void advanceMT(const float_T vel, vec_T& vec, const float_T mag) {
 }
 
 float_T probContact(const float_T ang) {
-  /* This computes the probability of successfully making contact at angle ang.
+  /* probContact: This computes the probability of successfully making contact
+   *   at angle ang.
    * Inputs: 
    *   const float_T ang: This is the angle at which an MT is testing to make
    *     contact. 
@@ -357,7 +359,7 @@ float_T probContact(const float_T ang) {
 }
 
 void addContact(const float_T angle) {
-  /* This adds a contact at the specified angle.
+  /* addContact: This adds a contact at the specified angle.
    * Inputs:
    *   const float_T angle: This is the contact angle.
    * Output: (none, but globals are updated).
@@ -386,7 +388,7 @@ void addContact(const float_T angle) {
 }
 
 void removeContact(const float_T angle) {
-  /* This removes a contact at the specified angle.
+  /* removeContact: This removes a contact at the specified angle.
    * Inputs:
    *   const float_T angle: This is the contact angle.
    * Output: (none, but globals are updated).
@@ -415,8 +417,8 @@ void removeContact(const float_T angle) {
 
 
 void mtContactTest(const MTOC centrosome, const unsigned i) {
-  /* This performs a total test for MT contact for the ith MT off of the
-   *   centrosome MTOC. Contact occurs if the test is successful, in this
+  /* mtContactTest: This performs a total test for MT contact for the ith MT off
+   *   of the centrosome MTOC. Contact occurs if the test is successful, in this
    *   function. 
    * Inputs: 
    *   const MTOC centrosome: This specifies from which MTOC the tested MT
@@ -463,8 +465,8 @@ void mtContactTest(const MTOC centrosome, const unsigned i) {
 }
 
 void respawnMTB(vec_T& vec, const float_T ang, const float_T envelope[2]) {
-  /* This function is the base respawn function for an MT. We have wrappers to
-   *   call this for an explicit MT of MTOC M or D below. 
+  /* respawnMTB: This function is the base respawn function for an MT. We have
+   *   wrappers to call this for an explicit MT of MTOC M or D below. 
    * Inputs: 
    *   vec_T& vec: This is the MT vector that is to be respawned. 
    *   const float_T ang: This is the angular coordinate of the appropriate
@@ -483,7 +485,8 @@ void respawnMTB(vec_T& vec, const float_T ang, const float_T envelope[2]) {
 
 void respawnMT(const MTOC centrosome, vec_T& vec, const unsigned int i,
                const float_T envelope[2]) {
-  /* This function is the MTOC explicit wrapper function for respawnMTB above.  
+  /* respawnMT: This function is the MTOC explicit wrapper function for
+   *   respawnMTB above.  
    * Inputs: 
    *   const MTOC centrosome: This specifies the centrosome of the MT in
    *     question. 
@@ -512,12 +515,12 @@ void respawnMT(const MTOC centrosome, vec_T& vec, const unsigned int i,
 }
 
 inline bool checkBoundary() {
-  /* This functions estimates if the pronucleus has impacted on the cortex. It
-   *   estimates because that typically does a good enough job, and doing the
-   *   exact calculation would be very difficult. 3D WARNING: This function is
-   *   explicitly a 2D implementation. It's inline because its very short and
-   *   called in the loop, so making it inline will make the program slightly
-   *   more efficient. 
+  /* checkBoundary: This functions estimates if the pronucleus has impacted on
+   *   the cortex. It estimates because that typically does a good enough job,
+   *   and doing the exact calculation would be very difficult. 3D WARNING: This
+   *   function is explicitly a 2D implementation. It's inline because its very
+   *   short and called in the loop, so making it inline will make the program
+   *   slightly more efficient. 
    * Inputs: (none)
    * Output: If the pronucleus has impacted the boundary.
    */
@@ -527,8 +530,8 @@ inline bool checkBoundary() {
 }
 
 void runModel(bool writeAllData, bool writeTempData) {
-  /* This function actually runs the model and records the data as specified by
-   *   the user. 
+  /* runModel: This function actually runs the model and records the data as
+   *   specified by the user. 
    * Inputs: 
    *   bool writeAllData: This specifies whether or not to write all data.
    *   bool writeTempData: This specifies whether or not to write data every 30
@@ -715,7 +718,7 @@ void runModel(bool writeAllData, bool writeTempData) {
 }
 
 void usage() {
-  /* This function prints a usage string. 
+  /* usage: This function prints a usage string. 
    * Inputs: (none)
    * Output: (none)
    */
@@ -725,7 +728,8 @@ void usage() {
 }
 
 int numContacts() {
-  /* This function computes the number of total contacts made across the cortex. 
+  /* numContacts: This function computes the number of total contacts made
+   *   across the cortex. 
    * Inputs: (none)
    * Output: The number of contacts. 
    */
@@ -736,15 +740,15 @@ int numContacts() {
 }
 
 void test() {
-  /* This is a dummy function useful for testing changes to the code. 
+  /* test: This is a dummy function useful for testing changes to the code. 
    * Inputs: (none, currently)
    * Output: (none, currently)
    */
 }
 
 int main(int argc, const char* argv[]) {
-  /* This is the main function, run when you call the program as an executable
-   *   from the command line. 
+  /* main: This is the main function, run when you call the program as an
+   *   executable from the command line. 
    * Inputs: 
    *   int argc: The number of arguments passed to the command line call to this
    *     function. 
