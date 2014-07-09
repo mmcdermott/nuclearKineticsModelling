@@ -62,7 +62,7 @@
   premise: Open \texttt{MATLAB}, set values \texttt{dataDir} and
   \texttt{dataFile} \textit{(and/or \texttt{dataFile2})} in the \texttt{MATLAB}
   console, then run the script. \texttt{dataDir} stands for the directory (as a
-  sub-directory of \texttt{'nuclearKineticsModelling/data/}) and
+  sub-directory of \texttt{nuclearKineticsModelling/data/}) and
   \texttt{dataFile} stands for the dataFile in question. 
   \subsection{Basic Usage:}
   For basic usage, the only additional step beyond simple compilation and
@@ -103,6 +103,38 @@
   There are a variety of other parameters one may wish to modify, all of which
   found in the \texttt{parameters.cpp} file. For these modifications, the same
   procedure is used: modify the parameter, re-compile, and run. 
+  \subsection{Major Experiments:} 
+  For running a long form experiment, with many runs of many different parameter
+  variations required to collect all the requisite data, manually changing the
+  parameter file each time is tedious and slow. To combat this, there is also a
+  script \texttt{experiment.sh} inside of \texttt{modelCode} which automates
+  this process for you. Currently, experiment.sh only supports running
+  experiments on the \texttt{translation}, \texttt{envWidthM},
+  \texttt{envWidthD}, and \texttt{width} parameters, which correspond to the
+  translation status, mother allowed-growth envelope width, daughter
+  allowed-growth envelope width, and the push band width, respectively. To use
+  this script, decide what values of these parameters you would like tested. The
+  script will then run \emph{all possible} combinations of these values, and
+  write the data to file names based on specified parameter-specific portions.
+  Be warned, should the user-specified parameter naming scheme be ambiguous,
+  then the script will potentially overwrite other files it has produced on a
+  later model run. However, with a sensible naming style, this should not
+  happen. To specify the parameter values and naming schema used, simply modify
+  the values specified in the file (lines 15-18, currently) and the associated
+  file path/name variables (lines 25, 27, 29, and 31, currently). Values are
+  stored in space separated lists and encoded as strings currently. Each string
+  in this list is then used to overwrite the current parameter in the
+  \texttt{parameters.cpp} file, before the file is made, then run, with the
+  associated file passed as input. Note that, as these values are simply passed
+  directly into the \texttt{parameters.cpp} file, they must be valid
+  \texttt{C++} syntax. Furthermore, the initial values must be known to the
+  shell script. In other words, the values specified on lines 34 through 37 must
+  match the current values in the \texttt{parameters.cpp} file, character for
+  character. Unfortunately, currently this script is rather hacked together, and
+  not especially elegant so it may be hard to understand. Feel free to reach out
+  to me at
+  \href{mailto:mattmcdermott8@gmail.com}{\nolinkurl{mattmcdermott8@gmail.com}}
+  in case of confusion. 
 \section{Current Algorithm}
 \subsection{High Level Description}
 The current algorithm is very straightforward. In particular, for each step in

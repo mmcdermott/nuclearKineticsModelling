@@ -7,11 +7,21 @@ translationPrefix="const bool translation = "
 envPrefix="const float_T envWidthD = "
 bandPrefix="const float_T width = "
 
+#Variable values to use. To add multiple values, use a space separated list.
+#Note that what values are specified here are actually strings, to be written to
+#parameters.cpp file that will then be compiled as normal, so you must enter
+#strings that correspond to valid c++ syntax. pi has been pre-defined in the 
+#parameters.cpp file, however, so its fair game to use here. 
 mEnvs="2*pi"
 translations="true"
 envWidths="pi\/2 pi\/2.5 pi\/3 pi\/3.5 pi\/4 pi\/5 pi\/6 pi\/7 pi\/8 pi\/10 pi\/12 pi\/15 pi\/18"
 bandWidths="pi\/2 pi\/2.5 pi\/3 pi\/3.5 pi\/4 pi\/5 pi\/6 pi\/7 pi\/8 pi\/10 pi\/12 pi\/15 pi\/18"
 
+#Parameter specific directories and files to use. You MUST have exactly as many
+#of these as values. They will be used with the values to determine file
+#path/name and used accordingly. Unfortunately only one naming style is
+#supported right now, though the specific parameter specific directories and
+#files can be modified. 
 mEnvDirs="mEnv2P/"
 mEnvDirs=($mEnvDirs)
 translationDirs="translation/"
