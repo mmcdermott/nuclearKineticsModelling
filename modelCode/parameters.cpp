@@ -12,7 +12,7 @@
 //TODO: This typedef is unnecessary. The code in main.cpp should be updated to
 //use Vector straight. 
 typedef Vector vec_T;
-const float_T pi = 3.1415926535897;
+const float_T pi = M_PI;
 
 //This will define our centrosome options. 
 enum MTOC {M_CENTROSOME, D_CENTROSOME};
