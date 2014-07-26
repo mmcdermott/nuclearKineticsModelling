@@ -5,7 +5,7 @@ figpath = ['figs'];
 
 run clean_fig_data_folder
 
-figure('visible','off');
+%figure('visible','off');
 hold on;
 
 axis equal

@@ -3,6 +3,15 @@
 #include <chrono>
 #include <random>
 
+inline float_T testStat() {
+  /* testStat(): A function to generate a test statistic.
+   * Input: None
+   * Output: A uniform random float_T between 0 and 1
+   */
+  //return ((float_T) rand())/((float_T) RAND_MAX);
+  return stdUniformDist(generator);
+}
+
 void writeParams() {
   //file << fileOrder << std::endl;
   //  Non-plotting params: 
@@ -64,10 +73,10 @@ void setToBasePos() {
     // Suffix *M* means mother, *D* means daughter.
     //
     // TODO: Implement Distribution (Boost ?)
-    float_T randMR = 20*((float_T) rand())/((float_T) RAND_MAX);  //Random Values
-    float_T randMT = ((float_T) rand())/((float_T) RAND_MAX);  //Random Values
-    float_T randDR = 20*((float_T) rand())/((float_T) RAND_MAX);  //Random Values
-    float_T randDT = ((float_T) rand())/((float_T) RAND_MAX);  //Random Values
+    float_T randMR = 20*testStat();//((float_T) rand())/((float_T) RAND_MAX);  //Random Values
+    float_T randMT = testStat();//((float_T) rand())/((float_T) RAND_MAX);  //Random Values
+    float_T randDR = 20*testStat();//((float_T) rand())/((float_T) RAND_MAX);  //Random Values
+    float_T randDT = testStat();//((float_T) rand())/((float_T) RAND_MAX);  //Random Values
     //std::cout << "randMR: " << randMR << std::endl;
     //std::cout << "randMT: " << randMT << std::endl;
     //std::cout << "randDR: " << randDR << std::endl;
@@ -75,9 +84,9 @@ void setToBasePos() {
     //Using these RVs to construct the position variables of the MTs.
     float_T r_M    = sqrt(randMR); //Random Radius of MT;
     //std::cout << r_M << std::endl;
-    float_T t_M    = (startPsi - pi/2) + (envelopeM[1]-envelopeM[0])*randMT + envelopeM[0];    //Random Theta of MT;
+    float_T t_M    = (startPsi - pi/2) + (envelopeM[1]-envelopeM[0])*randMT + envelopeM[0]; //Random Theta of MT;
     float_T r_D    = sqrt(randDR); //Random Radius of MT;
-    float_T t_D    = (startPsi + pi/2) + (envelopeD[1]-envelopeD[0])*(randDT) + envelopeD[0];//Random Theta of MT;
+    float_T t_D    = (startPsi + pi/2) + (envelopeD[1]-envelopeD[0])*randDT + envelopeD[0]; //Random Theta of MT;
     //Assigning the positions. 
     MT_Pos_M[i][0] = basePosM[0]+ r_M*cos(t_M);
     MT_Pos_M[i][1] = basePosM[1]+ r_M*sin(t_M);

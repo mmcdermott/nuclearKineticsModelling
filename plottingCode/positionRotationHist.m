@@ -13,7 +13,7 @@ csvrange = [rowStart colStart rowStart+numRuns-1 colStart+2];
 DATA = csvread(dataFileFull,rowStart,colStart,csvrange);
 x = DATA(:,1);
 y = DATA(:,2);
-psi = abs((DATA(:,3)-pi/2)*180/pi);
+psi = DATA(:,3);%*180/pi;
 
 figure
 subplot(2,2,1);
@@ -36,9 +36,9 @@ ylabel('PDF of Runs');
 
 
 subplot(2,2,3);
-dataPsi = nhist(psi,'legend',{dataFile},'pdf','box','location','NorthOutside');
+dataPsi = rose(psi,500)%,'legend',{dataFile},'pdf','box','location','NorthOutside');
 hold on;
 StartingAng = plot(startPsi, 0, '*');
-xlabel('|Pronucleus Rotation| (deg)');
-ylabel('PDF of Runs');
+xlabel('Pronucleus Rotation (deg)');
+ylabel('CDF of Runs');
 

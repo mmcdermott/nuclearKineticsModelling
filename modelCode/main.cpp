@@ -11,14 +11,6 @@ typedef std::numeric_limits< float_T >flt;
 
 using namespace std;
 
-inline float_T testStat() {
-  /* testStat(): A function to generate a test statistic.
-   * Input: None
-   * Output: A uniform random float_T between 0 and 1
-   */
-  return ((float_T) rand())/((float_T) RAND_MAX);
-}
-
 ostream& operator<<(ostream& out, const vec_T& rhs) {
   /* operator<<(ostream, vec_T): A wrapper to write a vector to an output
    *   stream.

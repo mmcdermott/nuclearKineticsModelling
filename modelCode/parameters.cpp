@@ -12,6 +12,8 @@
 //TODO: This typedef is unnecessary. The code in main.cpp should be updated to
 //use Vector straight. 
 typedef Vector vec_T;
+//const float_T pi = 3.1415926535897;
+//const float_T pi = 3.141;
 const float_T pi = M_PI;
 
 //This will define our centrosome options. 
@@ -21,13 +23,13 @@ enum MTOC {M_CENTROSOME, D_CENTROSOME};
 bool spitValues = false;
 
 //Type Parameters
-const bool motherSpringOn = true;
+const bool motherSpringOn = false;
 const bool daughterSpringOn = false;
 const bool translation = true;
 const bool ONLY_COMMA = true;
 
 //Parameters
-const float_T Duration = 25;         //duration in minutes
+const float_T Duration = 4;         //duration in minutes
 const float_T Tau      = 1.0/4000.0; //time step in minutes
 
 // MT Parameters
@@ -87,8 +89,8 @@ const float_T D      = kbT/Eta2; //Diffusion Coefficient for centrosome motion. 
 //const float_T startY   = 0;
 
 //   Off-center Coordinates
-const float_T startPsi = pi/2.0 + pi/8.0;
-const float_T startX   = R1_max/5.0;
+const float_T startPsi = pi/2.0;
+const float_T startX   = 5.0;
 const float_T startY   = 0;
 
 //  General Coordinate Initializations: 
@@ -168,4 +170,5 @@ std::string fileOrder = "t,proNucPos,psi,MT_Pos_M,MT_Pos_D,force_M,force_D,\
 
 // Random Number Generation Parameters: 
 std::normal_distribution<float_T> stdNormalDist;
+std::uniform_real_distribution<float_T> stdUniformDist(0.0,1.0);
 std::default_random_engine generator;
