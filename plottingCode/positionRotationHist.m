@@ -36,7 +36,7 @@ ylabel('PDF of Runs');
 
 
 subplot(2,2,3);
-dataPsi = rose(psi,500)%,'legend',{dataFile},'pdf','box','location','NorthOutside');
+dataPsi = rose(psi,150)%,'legend',{dataFile},'pdf','box','location','NorthOutside');
 hold on;
 StartingAng = plot(startPsi, 0, '*');
 xlabel('Pronucleus Rotation (deg)');

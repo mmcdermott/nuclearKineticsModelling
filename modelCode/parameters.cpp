@@ -29,7 +29,7 @@ const bool translation = true;
 const bool ONLY_COMMA = true;
 
 //Parameters
-const float_T Duration = 4;         //duration in minutes
+const float_T Duration = 8;         //duration in minutes
 const float_T Tau      = 1.0/4000.0; //time step in minutes
 
 // MT Parameters

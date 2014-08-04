@@ -263,7 +263,7 @@ void updatePNPos() {
     }
     force += force_M;
 
-    torque_M = -force_M[0]*proNucRad[1] + force_M[1]*proNucRad[1];
+    torque_M = -force_M[0]*proNucRad[1] + force_M[1]*proNucRad[0];
   }
   //The next if clause is a near direct repeat of the mother clause above.
   //Hence, comments will be omitted. 

@@ -72,21 +72,23 @@ void setToBasePos() {
     // Suffix *R means radius, *T theta. 
     // Suffix *M* means mother, *D* means daughter.
     //
-    // TODO: Implement Distribution (Boost ?)
-    float_T randMR = 20*testStat();//((float_T) rand())/((float_T) RAND_MAX);  //Random Values
-    float_T randMT = testStat();//((float_T) rand())/((float_T) RAND_MAX);  //Random Values
-    float_T randDR = 20*testStat();//((float_T) rand())/((float_T) RAND_MAX);  //Random Values
-    float_T randDT = testStat();//((float_T) rand())/((float_T) RAND_MAX);  //Random Values
-    //std::cout << "randMR: " << randMR << std::endl;
-    //std::cout << "randMT: " << randMT << std::endl;
-    //std::cout << "randDR: " << randDR << std::endl;
-    //std::cout << "randDT: " << randDT << std::endl;
+    float_T randMR = 20*testStat();
+    float_T randMT = testStat();   
+    float_T randDR = 20*testStat();
+    float_T randDT = testStat();   
     //Using these RVs to construct the position variables of the MTs.
     float_T r_M    = sqrt(randMR); //Random Radius of MT;
-    //std::cout << r_M << std::endl;
     float_T t_M    = (startPsi - pi/2) + (envelopeM[1]-envelopeM[0])*randMT + envelopeM[0]; //Random Theta of MT;
     float_T r_D    = sqrt(randDR); //Random Radius of MT;
     float_T t_D    = (startPsi + pi/2) + (envelopeD[1]-envelopeD[0])*randDT + envelopeD[0]; //Random Theta of MT;
+
+    ////TODO: uncomment the above, get rid of this. This is just for testing, it
+    ////always spawns the MT at the same place. 
+    //float_T r_M    = 1;
+    //float_T t_M    = (startPsi - pi/2) + (envelopeM[1]-envelopeM[0])*0.25 + envelopeM[0]; //Random Theta of MT;
+    //float_T r_D    = 1;
+    //float_T t_D    = (startPsi + pi/2) + (envelopeD[1]-envelopeD[0])*0.5 + envelopeD[0]; //Random Theta of MT;
+
     //Assigning the positions. 
     MT_Pos_M[i][0] = basePosM[0]+ r_M*cos(t_M);
     MT_Pos_M[i][1] = basePosM[1]+ r_M*sin(t_M);
