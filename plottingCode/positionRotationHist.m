@@ -21,7 +21,7 @@ dataX = nhist(x,'legend',{dataFile},'pdf','box','location','NorthOutside');
 hold on;
 StartingX = plot(startX, 0,'*');
 axis 'auto x'
-xlabel('x-translation (mum)');
+xlabel('Final x Position (mum)');
 ylabel('PDF of Runs');
 %legend([StartingX],{'Starting Position'});
 
@@ -30,13 +30,13 @@ dataX = nhist(y,'legend',{dataFile},'pdf','box','location','NorthOutside');
 hold on;
 StartingY = plot(startY, 0,'*');
 axis 'auto x'
-xlabel('y-translation (mum)');
+xlabel('Final y Position (mum)');
 ylabel('PDF of Runs');
 %legend([StartingX],{'Starting Position'});
 
 
 subplot(2,2,3);
-dataPsi = rose(psi,150)%,'legend',{dataFile},'pdf','box','location','NorthOutside');
+dataPsi = rose(psi,350)%,'legend',{dataFile},'pdf','box','location','NorthOutside');
 hold on;
 StartingAng = plot(startPsi, 0, '*');
 xlabel('Pronucleus Rotation (deg)');

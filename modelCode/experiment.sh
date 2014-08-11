@@ -1,5 +1,5 @@
 clear
-fileBase="rotVsBand/springed/"
+fileBase="rotVsBandPostFix/springed/"
 commandBase="./mtKineticModel 100"
 
 mEnvPrefix="const float_T envWidthM = "
@@ -12,7 +12,7 @@ bandPrefix="const float_T width = "
 #parameters.cpp file that will then be compiled as normal, so you must enter
 #strings that correspond to valid c++ syntax. pi has been pre-defined in the 
 #parameters.cpp file, however, so its fair game to use here. 
-mEnvs="2*pi"
+mEnvs="pi 2*pi"
 translations="true"
 envWidths="pi\/2 pi\/2.5 pi\/3 pi\/3.5 pi\/4 pi\/5 pi\/6 pi\/7 pi\/8 pi\/10 pi\/12 pi\/15 pi\/18"
 bandWidths="pi\/2 pi\/2.5 pi\/3 pi\/3.5 pi\/4 pi\/5 pi\/6 pi\/7 pi\/8 pi\/10 pi\/12 pi\/15 pi\/18"
@@ -22,7 +22,7 @@ bandWidths="pi\/2 pi\/2.5 pi\/3 pi\/3.5 pi\/4 pi\/5 pi\/6 pi\/7 pi\/8 pi\/10 pi\
 #path/name and used accordingly. Unfortunately only one naming style is
 #supported right now, though the specific parameter specific directories and
 #files can be modified. 
-mEnvDirs="mEnv2P/"
+mEnvDirs="mEnvP/ mEnv2P/"
 mEnvDirs=($mEnvDirs)
 translationDirs="translation/"
 translationDirs=($translationDirs)
@@ -31,7 +31,7 @@ envWidthFiles=($envWidthFiles)
 bandWidthFiles="bwPo2 bwPo2.5 bwPo3 bwPo3.5 bwPo4 bwPo5 bwPo6 bwPo7 bwPo8 bwPo10 bwPo12 bwPo15 bwPo18"
 bandWidthFiles=($bandWidthFiles)
 
-prevMEnv="2*pi"
+prevMEnv="pi"
 prevTranslation="true"
 prevEnv="pi\/6"
 prevBand="pi\/4"
@@ -63,7 +63,9 @@ for mEnv in $mEnvs; do
       for bandWidth in $bandWidths; do
         bandWidthFile=${bandWidthFiles[$bandCount]}
         sed -i "s/$bandPrefix$prevBand;/$bandPrefix$bandWidth;/g" parameters.cpp
-        make && $commandBase $fileBase$translationDir$mEnvDir$bandWidthFile$envWidthFile
+        mkdir -p '../data/'$fileBase$translationDir$mEnvDir
+        make
+        $commandBase $fileBase$translationDir$mEnvDir$bandWidthFile$envWidthFile
         prevBand=$bandWidth
         bandCount=`expr $bandCount + 1`
       done

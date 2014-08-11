@@ -64,9 +64,9 @@ float_T torque_M;
 float_T torque_D;
 float_T torque;
 //   Envelope Parameters
-const float_T envWidthM = pi/2;
+const float_T envWidthM = pi/6;
 const float_T envelopeM[2] = {pi/2.0 - envWidthM/2.0, pi/2.0 + envWidthM/2.0}; // The envelope in which MTs from M can grow. 
-const float_T envWidthD = pi/2;
+const float_T envWidthD = pi;
 const float_T envelopeD[2] = {pi/2.0 - envWidthD/2.0, pi/2.0 + envWidthD/2.0}; // The envelope in which MTs from M can grow. 
 //   Spring Parameters
 const float_T kM = 8;
@@ -84,14 +84,14 @@ const float_T D      = kbT/Eta2; //Diffusion Coefficient for centrosome motion. 
 
 //  Starting Coordinates:
 //   Centered Coordinates: 
-//const float_T startPsi = pi/2.0;
-//const float_T startX   = 0;
-//const float_T startY   = 0;
+const float_T startPsi = pi/2.0;
+const float_T startX   = 0;
+const float_T startY   = 0;
 
 //   Off-center Coordinates
-const float_T startPsi = pi/2.0;
-const float_T startX   = 5.0;
-const float_T startY   = 0;
+//const float_T startPsi = pi/2.0 + pi/8.0;
+//const float_T startX   = 5.0;
+//const float_T startY   = 0;
 
 //  General Coordinate Initializations: 
 float_T psi;
@@ -122,10 +122,10 @@ vec_T proNucPos;
 //    vector, as it is broken up into regions, not enpoints of regions. 
 
 //No Bands:
-//const int numRegions = 1;
-//const float_T regionAngles[numRegions + 1] = {0, 2*pi};
-//const float_T regionProbabilities[numRegions] = {1};
-//const float_T regionForceMultipliers[numRegions] = {1};
+// const int numRegions = 1;
+// const float_T regionAngles[numRegions + 1] = {0, 2*pi};
+// const float_T regionProbabilities[numRegions] = {1};
+// const float_T regionForceMultipliers[numRegions] = {1};
 
 //Standard Bands:
 const int numRegions = 5;

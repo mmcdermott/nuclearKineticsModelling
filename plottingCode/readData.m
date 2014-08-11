@@ -99,7 +99,7 @@ legend([torqueP], {'Torque (pN mum)'});
 timeMarkerTorque = plot([0 0], [-axisLimTorque axisLimTorque],'Color','g','LineWidth',2);
 
 
-step = 100;
+step = 1;
 for i = 1 : step : length(DATA)
     data = DATA(i,:);
     t = data(1);

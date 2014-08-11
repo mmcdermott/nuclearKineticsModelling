@@ -10,8 +10,8 @@ end
 if (exist('ratio','var') == 0)
     ratio = true;
 end
-dataBaseDir = '../data/rotVsBand/springed/';
-figsBaseDir = '../../figures/rotVsBand/springed/';
+dataBaseDir = '../data/rotVsBandPostFix/notSpringed/';
+figsBaseDir = '../../figures/rotVsBandPostFix/notSpringed/';
 if (motherEnvelope == pi)
     envDir = 'mEnvP/';
 elseif (motherEnvelope == 2*pi)
@@ -112,27 +112,46 @@ for j = 1:length(fixedWidths)
     fig = figure('visible', 'off');
     if (translation)
         if (ratio)
+            fullRange = [sortedXratio(1) sortedXratio(length(sortedXratio))];
             subplot(3,1,1);
             hold on;
             errorbar(sortedXratio,sortedYpsi,sortedErrorPsi);
-            plot([sortedXratio(1) sortedXratio(length(sortedXratio))], ...
-                 [90 90], 'g--');
-            plot([sortedXratio(1) sortedXratio(length(sortedXratio))], ...
-                 [180/8 180/8], 'k--');
+            ideal = plot(fullRange, [90 90], 'g--');
+            initial = plot(fullRange, [180/8 180/8], 'k--');
+
             xlabel('(Band Width)/(Daughter Envelope Width)');
             ylabel('Abs(Rotation)');
+            legend([ideal, initial],{'Full Half-turn (ideal)','Initial orientation'});
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             subplot(3,1,2);
             hold on;
             errorbar(sortedXratio,sortedYx,sortedErrorX);
+            ideal = plot(fullRange, [-R1_max/5 -R1_max/5], 'g--');
+            initial = plot(fullRange, [R1_max/5 R1_max/5], 'b--');
+            leftEdge = plot(fullRange, [-R1_max, -R1_max], 'r--');
+            rightEdge = plot(fullRange, [R1_max, R1_max], 'r--');
+
             xlabel('(Band Width)/(Daughter Envelope Width)');
             ylabel('Final x positions (mum)');
+            legend([ideal, initial, leftEdge, rightEdge], ...
+                   {'Ideal Ending Position (60-40 line)', ...
+                    'Starting Position (opposite 60-40 line)', ...
+                    'Leftmost Cell Boundary',...
+                    'Rightmost Cell Boundary'});
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             subplot(3,1,3);
             hold on;
             errorbar(sortedXratio,sortedYy,sortedErrorY);
+            initial = plot(fullRange, [0 0], 'g--');
+            bottomEdge = plot(fullRange, [-R2_max, -R2_max], 'r--');
+            topEdge = plot(fullRange, [R2_max, R2_max], 'r--');
+
             xlabel('(Band Width)/(Daughter Envelope Width)');
             ylabel('Final x positions (mum)');
+            legend([initial, bottomEdge, topEdge], ...
+                   {'Initial Position', ...
+                    'Lower Cell Boundary',...
+                    'Upper Cell Boundary'});
         else
             subplot(3,1,1);
             hold on;
