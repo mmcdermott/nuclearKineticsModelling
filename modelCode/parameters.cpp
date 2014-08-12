@@ -12,8 +12,6 @@
 //TODO: This typedef is unnecessary. The code in main.cpp should be updated to
 //use Vector straight. 
 typedef Vector vec_T;
-//const float_T pi = 3.1415926535897;
-//const float_T pi = 3.141;
 const float_T pi = M_PI;
 
 //This will define our centrosome options. 
@@ -23,8 +21,8 @@ enum MTOC {M_CENTROSOME, D_CENTROSOME};
 bool spitValues = false;
 
 //Type Parameters
-const bool motherSpringOn = false;
-const bool daughterSpringOn = false;
+const bool motherSpringOn = true;
+const bool daughterSpringOn = true;
 const bool translation = true;
 const bool ONLY_COMMA = true;
 
@@ -64,13 +62,13 @@ float_T torque_M;
 float_T torque_D;
 float_T torque;
 //   Envelope Parameters
-const float_T envWidthM = pi/6;
+const float_T envWidthM = 2*pi;
 const float_T envelopeM[2] = {pi/2.0 - envWidthM/2.0, pi/2.0 + envWidthM/2.0}; // The envelope in which MTs from M can grow. 
-const float_T envWidthD = pi;
+const float_T envWidthD = 2*pi;
 const float_T envelopeD[2] = {pi/2.0 - envWidthD/2.0, pi/2.0 + envWidthD/2.0}; // The envelope in which MTs from M can grow. 
 //   Spring Parameters
-const float_T kM = 8;
-const float_T kD = 16;
+const float_T kM = 3;
+const float_T kD = 3;
 
 // Pronucleus Parameters
 const float_T R1_max = 25;       //Embryo width in mum
@@ -122,20 +120,20 @@ vec_T proNucPos;
 //    vector, as it is broken up into regions, not enpoints of regions. 
 
 //No Bands:
-// const int numRegions = 1;
-// const float_T regionAngles[numRegions + 1] = {0, 2*pi};
-// const float_T regionProbabilities[numRegions] = {1};
-// const float_T regionForceMultipliers[numRegions] = {1};
+const int numRegions = 1;
+const float_T regionAngles[numRegions + 1] = {0, 2*pi};
+const float_T regionProbabilities[numRegions] = {1};
+const float_T regionForceMultipliers[numRegions] = {1};
 
 //Standard Bands:
-const int numRegions = 5;
-const float_T width = pi/4;
-const float_T centerPos = 1.24287;
-const float_T start = centerPos - width/2.0;
-const float_T end = centerPos + width/2.0;
-const float_T regionAngles[numRegions+1] = {0, start, end, 2*pi - end, 2*pi - start, 2*pi};
-const float_T regionProbabilities[numRegions] = {1,1,1,1,1};
-const float_T regionForceMultipliers[numRegions] = {1,-1,1,-1,1};
+//const int numRegions = 5;
+//const float_T width = pi/4;
+//const float_T centerPos = 1.24287;
+//const float_T start = centerPos - width/2.0;
+//const float_T end = centerPos + width/2.0;
+//const float_T regionAngles[numRegions+1] = {0, start, end, 2*pi - end, 2*pi - start, 2*pi};
+//const float_T regionProbabilities[numRegions] = {1,1,1,1,1};
+//const float_T regionForceMultipliers[numRegions] = {1,-1,1,-1,1};
 
 // MT density limitations
 //  Only one contact per window, windows of length ~1
