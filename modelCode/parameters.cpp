@@ -31,17 +31,18 @@ const float_T Duration = 8;         //duration in minutes
 const float_T Tau      = 1.0/4000.0; //time step in minutes
 
 // MT Parameters
-const unsigned MT_numb = 100; //# of MTs from one centrosome.  (maybe 1000)
-vec_T MT_Pos_M[MT_numb];
-vec_T MT_Pos_D[MT_numb];
-bool MT_Growing_M[MT_numb];
-bool MT_Growing_D[MT_numb];
-float_T MT_GrowthVel_M[MT_numb];
-float_T MT_GrowthVel_D[MT_numb];
+const unsigned MT_numb_M = 100; //# of MTs from the M centrosome.
+const unsigned MT_numb_D = 100; //# of MTs from the D centrosome.
+vec_T MT_Pos_M[MT_numb_M];
+vec_T MT_Pos_D[MT_numb_D];
+bool MT_Growing_M[MT_numb_M];
+bool MT_Growing_D[MT_numb_D];
+float_T MT_GrowthVel_M[MT_numb_M];
+float_T MT_GrowthVel_D[MT_numb_D];
 //  Contact Parameters:
 float_T contact_length = 400*Tau; //TODO: Find Better Estimate of Me. 
-float_T MT_Contact_M[MT_numb];
-float_T MT_Contact_D[MT_numb];
+float_T MT_Contact_M[MT_numb_M];
+float_T MT_Contact_D[MT_numb_D];
 //  Growth Parameters
 const float_T Vg   = 4*10; //growth velocity in mum/min
 //const float_T Vg_c = 0;    //growth velocity after contact 

@@ -28,16 +28,41 @@ ostream& operator<<(ostream& out, const vec_T& rhs) {
   return out;
 }
 
-ostream& operator<<(ostream& out, const vec_T (&rhs)[MT_numb]) {
-  /* operator<<(ostream, vec_T[MT_numb]): A wrapper to write an array of vectors
+ostream& operator<<(ostream& out, const vec_T (&rhs)[MT_numb_M]) {
+  /* operator<<(ostream, vec_T[MT_numb_M]): A wrapper to write an array of vectors
    *   to an output stream.
    * Inputs: 
    *   ostream& out: The stream to which rhs should be written. 
-   *   const vec_T (&rhs)[MT_numb]: The array of vectors that should be written
+   *   const vec_T (&rhs)[MT_numb_M]: The array of vectors that should be written
    * Output: The ostream out. 
+   * TODO: It is really dumb that we have two versions of this function. The MTs
+   * should be encapsulated as objects, and then this would be MUCH cleaner and
+   * easier to maintain.
    */
   out << rhs[0];
-  for (size_t i = 1; i < MT_numb; ++i) {
+  for (size_t i = 1; i < MT_numb_M; ++i) {
+    if (ONLY_COMMA) {
+      //There are two modes of writing. This is by far the most common. 
+      out << "," << rhs[i];
+    } else {
+      out << ";" << rhs[i];
+    }
+  }
+  return out;
+}
+ostream& operator<<(ostream& out, const vec_T (&rhs)[MT_numb_D]) {
+  /* operator<<(ostream, vec_T[MT_numb_D]): A wrapper to write an array of vectors
+   *   to an output stream.
+   * Inputs: 
+   *   ostream& out: The stream to which rhs should be written. 
+   *   const vec_T (&rhs)[MT_numb_D]: The array of vectors that should be written
+   * Output: The ostream out. 
+   * TODO: It is really dumb that we have two versions of this function. The MTs
+   * should be encapsulated as objects, and then this would be MUCH cleaner and
+   * easier to maintain.
+   */
+  out << rhs[0];
+  for (size_t i = 1; i < MT_numb_D; ++i) {
     if (ONLY_COMMA) {
       //There are two modes of writing. This is by far the most common. 
       out << "," << rhs[i];
@@ -48,16 +73,41 @@ ostream& operator<<(ostream& out, const vec_T (&rhs)[MT_numb]) {
   return out;
 }
 
-ostream& operator<<(ostream& out, const float_T (&rhs)[MT_numb]) {
-  /* operator<<(ostream, float_T[MT_numb]): A wrapper to write an array of floats
+ostream& operator<<(ostream& out, const float_T (&rhs)[MT_numb_M]) {
+  /* operator<<(ostream, float_T[MT_numb_M]): A wrapper to write an array of floats
    *   to an output stream.
    * Inputs: 
    *   ostream& out: The stream to which rhs should be written. 
-   *   const vec_T (&rhs)[MT_numb]: The array of floats that should be written
+   *   const vec_T (&rhs)[MT_numb_M]: The array of floats that should be written
    * Output: The ostream out. 
+   * TODO: It is really dumb that we have two versions of this function. The MTs
+   * should be encapsulated as objects, and then this would be MUCH cleaner and
+   * easier to maintain.
    */
   out << rhs[0];
-  for (size_t i = 1; i < MT_numb; ++i) {
+  for (size_t i = 1; i < MT_numb_M; ++i) {
+    if (ONLY_COMMA) {
+      //There are two modes of writing. This is by far the most common. 
+      out << "," << rhs[i];
+    } else {
+      out << ";" << rhs[i];
+    }
+  }
+  return out;
+}
+ostream& operator<<(ostream& out, const float_T (&rhs)[MT_numb_D]) {
+  /* operator<<(ostream, float_T[MT_numb_D]): A wrapper to write an array of floats
+   *   to an output stream.
+   * Inputs: 
+   *   ostream& out: The stream to which rhs should be written. 
+   *   const vec_T (&rhs)[MT_numb_D]: The array of floats that should be written
+   * Output: The ostream out. 
+   * TODO: It is really dumb that we have two versions of this function. The MTs
+   * should be encapsulated as objects, and then this would be MUCH cleaner and
+   * easier to maintain.
+   */
+  out << rhs[0];
+  for (size_t i = 1; i < MT_numb_D; ++i) {
     if (ONLY_COMMA) {
       //There are two modes of writing. This is by far the most common. 
       out << "," << rhs[i];
@@ -101,49 +151,31 @@ void writePartialData(const float_T t) {
   file<<t<<","<<proNucPos <<","<< psi <<","<< basePosM <<","<< basePosD << endl;
 }
 
-void mtForceCalc(const vec_T (&mtEndPos)[MT_numb], const vec_T &basePos, const
-    float_T (&mtContact)[MT_numb], vec_T &force, const float_T forceMag = F_MT) 
+void mtForceCalcM(const float_T forceMag = F_MT) 
 {
-  /* mtForceCalc: A function which computes the force on an MTOC implied by the
+  /* mtForceCalcM: A function which computes the force on the MTOC M implied by the
    *   cortical pushing and pulling forces due to the MTs. 
    * Inputs: 
-   *   const vec_T (&mtEndPos)[MT_numb]: A reference to an array of end mt
-   *     positions. Basically, this tells the function where to look to find the
-   *     MT end points, from which it can compute force if the MTs are making
-   *     contact. Note that as this is a reference, the entire array is never
-   *     passed to the function, just an address, making this function not quite
-   *     as inefficient as it might seem. 
-   *   const vec_T &basePos: A reference to the position of the MTOC. Without
-   *     springs, this is easily calculatable, but with springs must be tracked,
-   *     so we just keep it in all the time. 
-   *   const float_T (&mtContact)[MT_numb]: A reference to an array flagging MT
-   *     contacts, encoded via time remaining. If the time remaining is zero,
-   *     the MT is not making contact currently. As we are passing a reference,
-   *     it is again not so inefficient as it might seem. 
-   *   vec_T &force: A reference to the particular force vector that stores the
-   *     force on this MTOC (either force_M or force_D). This gets overwritten
-   *     to store the result, and, as it is a reference, this change persists
-   *     outside of this particular function. 
    *   const float_T forceMag: This is the magnitude of the force each MT should
    *     impart when being pulled by cortical dynein. Pushing is handled by
    *     using a multiplier, so this typically also is the magnitude of any
    *     cortical pushing forces as well. 
    * Output: (none)
-   * Issues: (TODO) This function could probably be simplified so that not so
-   *   many things need to be passed by reference here... maybe store the mt
-   *   parameters in an array or something? It seems excessive, is all. 
+   * TODO: It is really dumb that we have two versions of this function. The MTs
+   * should be encapsulated as objects, and then this would be MUCH cleaner and
+   * easier to maintain.
    */
   //First we'll zero out the forces, because we're about to compute them from
   //scratch. 
-  force.zero();
-  for (size_t i=0; i < MT_numb; ++i) {
+  force_M.zero();
+  for (size_t i=0; i < MT_numb_M; ++i) {
     //We only need to compute the force if the MT's making contact.
-    if (mtContact[i] == 0) continue;
+    if (MT_Contact_M[i] == 0) continue;
 
     //We need to search to see what multiplier we should assign, which requires
     //knowing the true cartesian angle of the vector. 
     //3D WARNING: This section would have to update when changing to 3d.
-    float_T angle = atan2(mtEndPos[i][1],mtEndPos[i][0]);
+    float_T angle = atan2(MT_Pos_M[i][1],MT_pos_M[i][0]);
     if (angle < 0) angle += 2*pi;
 
     //Now we find the multiplier: 
@@ -153,12 +185,53 @@ void mtForceCalc(const vec_T (&mtEndPos)[MT_numb], const vec_T &basePos, const
         multiplier = regionForceMultipliers[i-1];
 
     //Grabbing the unit vector associated with the mt...
-    vec_T mtUnitVec = (mtEndPos[i] - basePos).normalize();
+    vec_T mtUnitVec = (MT_Pos_M[i] - basePosM).normalize();
     //and adding it to the force vector. 
-    force += multiplier*mtUnitVec;
+    force_M += multiplier*mtUnitVec;
   }
   //Finally, multiply the force vector by the force magnitude. 
-  force *= forceMag;
+  force_M *= forceMag;
+}
+void mtForceCalcD(const float_T forceMag = F_MT) 
+{
+  /* mtForceCalcM: A function which computes the force on the MTOC D implied by the
+   *   cortical pushing and pulling forces due to the MTs. 
+   * Inputs: 
+   *   const float_T forceMag: This is the magnitude of the force each MT should
+   *     impart when being pulled by cortical dynein. Pushing is handled by
+   *     using a multiplier, so this typically also is the magnitude of any
+   *     cortical pushing forces as well. 
+   * Output: (none)
+   * TODO: It is really dumb that we have two versions of this function. The MTs
+   * should be encapsulated as objects, and then this would be MUCH cleaner and
+   * easier to maintain.
+   */
+  //First we'll zero out the forces, because we're about to compute them from
+  //scratch. 
+  force_D.zero();
+  for (size_t i=0; i < MT_numb_D; ++i) {
+    //We only need to compute the force if the MT's making contact.
+    if (MT_Contact_D[i] == 0) continue;
+
+    //We need to search to see what multiplier we should assign, which requires
+    //knowing the true cartesian angle of the vector. 
+    //3D WARNING: This section would have to update when changing to 3d.
+    float_T angle = atan2(MT_Pos_D[i][1],MT_pos_D[i][0]);
+    if (angle < 0) angle += 2*pi;
+
+    //Now we find the multiplier: 
+    float_T multiplier = 1;
+    for (size_t i = 1; i <= numRegions; ++i) 
+      if (angle < regionAngles[i] && angle >= regionAngles[i-1]) 
+        multiplier = regionForceMultipliers[i-1];
+
+    //Grabbing the unit vector associated with the mt...
+    vec_T mtUnitVec = (MT_Pos_D[i] - basePosD).normalize();
+    //and adding it to the force vector. 
+    force_D += multiplier*mtUnitVec;
+  }
+  //Finally, multiply the force vector by the force magnitude. 
+  force_D *= forceMag;
 }
 
 void netMTForce(const MTOC centrosome) {
@@ -177,11 +250,11 @@ void netMTForce(const MTOC centrosome) {
     case M_CENTROSOME:
       //If we care about the mother, then we need to use the M parameters, and
       //multiply the force magnitude by the Fratio parameter. 
-      mtForceCalc(MT_Pos_M, basePosM, MT_Contact_M, force_M, Fratio*F_MT);
+      mtForceCalcM(Fratio*F_MT);
       break;
     case D_CENTROSOME:
       //If we care about the daughter, then we need to use the D parameters. 
-      mtForceCalc(MT_Pos_D, basePosD, MT_Contact_D, force_D, F_MT);
+      mtForceCalcD(F_MT);
       break;
   }
 }
@@ -570,16 +643,14 @@ void runModel(bool writeAllData, bool writeTempData) {
     updatePNPos();
     
     //Growing and Shrinking of MTs/State Change
-    for (size_t i = 0; i < MT_numb; ++i) {
+    for (size_t i = 0; i < MT_numb_M; ++i) {
       //These are the relative positions of the MTs
-      vec_T vecM, vecD;
+      vec_T vecM;
       //Setting them properly. 
       vecM = MT_Pos_M[i] - basePosM;
-      vecD = MT_Pos_D[i] - basePosD;
 
       //Grabbing their relative magnitudes. 
       float_T mag_M = vecM.norm();
-      float_T mag_D = vecD.norm();
 
       //Respawning if necessary. First, we need to compute the angular position
       //of the MT relative to the pronucleus. 3D WARNING: This is explicitly 2D,
@@ -587,14 +658,11 @@ void runModel(bool writeAllData, bool writeTempData) {
       //positions. 
       float_T angleM = atan2(vecM[1],vecM[0]);
       if (angleM < 0) angleM += 2*pi;
-      float_T angleD = atan2(vecD[1],vecD[0]);
-      if (angleD < 0) angleD += 2*pi;
-      //angleM & angleD give us the cartesian angle of the MT relative to the
+      //angleM gives us the cartesian angle of the MT relative to the
       //Pronucleus, but we really want to use a rotated axis system that aligns
       //with the pronucleus. The Mt base points are offset by $\pi/2$, and we
       //have $\psi$, so some simple geometry shows
       float_T thetaM = angleM - (psi - pi/2.0);
-      float_T thetaD = angleD - (psi + pi/2.0);
 
       //MT-ENV: Different MT growth envelope handling would go here, though it
       //currently isn't used beyond spawning new MTS.
@@ -603,21 +671,13 @@ void runModel(bool writeAllData, bool writeTempData) {
           removeContact(angleM);
         respawnMT(M_CENTROSOME, vecM, i, envelopeM);
       }
-      if (mag_D < 0.1) {
-        if (MT_Contact_D[i] > 0) 
-          removeContact(angleD);
-        respawnMT(D_CENTROSOME, vecD, i, envelopeD);
-      }
 
       //Growing or Shrinking the MT. 
       advanceMT(MT_GrowthVel_M[i], vecM, mag_M);
-      advanceMT(MT_GrowthVel_D[i], vecD, mag_D);
 
       //Updating the endpoint positions.
       MT_Pos_M[i][0] = basePosM[0] + vecM[0];
       MT_Pos_M[i][1] = basePosM[1] + vecM[1];
-      MT_Pos_D[i][0] = basePosD[0] + vecD[0];
-      MT_Pos_D[i][1] = basePosD[1] + vecD[1];
 
       //Now, for state updating, I'll need a random number. 
       //For modularity, I'll declare the stat first. 
@@ -638,25 +698,10 @@ void runModel(bool writeAllData, bool writeTempData) {
         }
       }
 
-      test = testStat();
-      if (MT_Growing_D[i]) {
-        if (test < Pr_catastrophe && mag_D > 0.4) {
-          MT_Growing_D[i]   = false;
-          MT_GrowthVel_D[i] = -Vs;
-        }
-      } else {
-        if (test < Pr_rescue && !(MT_Contact_D[i] > 0)) {
-          MT_Growing_D[i]   = true;
-          MT_GrowthVel_D[i] = Vg;
-        }
-      }
-
       //Computing their scaled real magnitudes (scaled via the ellipse), so as
       //to determine if a contact has occurred.  
       float_T magScaledM = sqrt(pow(MT_Pos_M[i][0]/R1_max,2) + 
                                 pow(MT_Pos_M[i][1]/R2_max,2));
-      float_T magScaledD = sqrt(pow(MT_Pos_D[i][0]/R1_max,2) + 
-                                pow(MT_Pos_D[i][1]/R2_max,2));
 
       //Updating Contact Indicator:
       if (MT_Contact_M[i] > 0) {
@@ -679,6 +724,66 @@ void runModel(bool writeAllData, bool writeTempData) {
         //for contact. 
         mtContactTest(M_CENTROSOME, i);
       }
+    }
+    for (size_t i = 0; i < MT_numb_D; ++i) {
+      //These are the relative positions of the MTs
+      vec_T vecD;
+      //Setting them properly. 
+      vecD = MT_Pos_D[i] - basePosD;
+
+      //Grabbing their relative magnitudes. 
+      float_T mag_D = vecD.norm();
+
+      //Respawning if necessary. First, we need to compute the angular position
+      //of the MT relative to the pronucleus. 3D WARNING: This is explicitly 2D,
+      //by relying on and computing angles as opposed to general cortex
+      //positions. 
+      float_T angleD = atan2(vecD[1],vecD[0]);
+      if (angleD < 0) angleD += 2*pi;
+      //angleD gives us the cartesian angle of the MT relative to the
+      //Pronucleus, but we really want to use a rotated axis system that aligns
+      //with the pronucleus. The Mt base points are offset by $\pi/2$, and we
+      //have $\psi$, so some simple geometry shows
+      float_T thetaD = angleD - (psi + pi/2.0);
+
+      //MT-ENV: Different MT growth envelope handling would go here, though it
+      //currently isn't used beyond spawning new MTS.
+      if (mag_D < 0.1) {
+        if (MT_Contact_D[i] > 0) 
+          removeContact(angleD);
+        respawnMT(D_CENTROSOME, vecD, i, envelopeD);
+      }
+
+      //Growing or Shrinking the MT. 
+      advanceMT(MT_GrowthVel_D[i], vecD, mag_D);
+
+      //Updating the endpoint positions.
+      MT_Pos_D[i][0] = basePosD[0] + vecD[0];
+      MT_Pos_D[i][1] = basePosD[1] + vecD[1];
+
+      //Now, for state updating, I'll need a random number. 
+      //For modularity, I'll declare the stat first. 
+      float_T test;
+
+      test = testStat();
+      if (MT_Growing_D[i]) {
+        if (test < Pr_catastrophe && mag_D > 0.4) {
+          MT_Growing_D[i]   = false;
+          MT_GrowthVel_D[i] = -Vs;
+        }
+      } else {
+        if (test < Pr_rescue && !(MT_Contact_D[i] > 0)) {
+          MT_Growing_D[i]   = true;
+          MT_GrowthVel_D[i] = Vg;
+        }
+      }
+
+      //Computing their scaled real magnitudes (scaled via the ellipse), so as
+      //to determine if a contact has occurred.  
+      float_T magScaledD = sqrt(pow(MT_Pos_D[i][0]/R1_max,2) + 
+                                pow(MT_Pos_D[i][1]/R2_max,2));
+
+      //Updating Contact Indicator:
       //The if clause below is identical to the one above, just for the D
       //centrosome over the M centrosome. 
       if (MT_Contact_D[i] > 0) {

@@ -21,7 +21,7 @@ void writeParams() {
   file << std::endl;
 
   //  Plotting Params: 
-  file << MT_numb << "," << R1_max << "," << R2_max << "," << Prad << ",";
+  file << MT_numb_M << "," << MT_numb_D << "," << R1_max << "," << R2_max << "," << Prad << ",";
   file << Duration << "," << Tau << std::endl;
   file << numRegions << std::endl;
   file << 0;
@@ -66,7 +66,7 @@ void setToBasePos() {
   basePosD[0] = proNucPos[0] - cosinePrt;
   basePosD[1] = proNucPos[1] - sinePrt;
 
-  for (unsigned i = 0; i < MT_numb; ++i) {
+  for (unsigned i = 0; i < MT_numb_M; ++i) {
     //MTs:
     //Constructing the 4 random numbers necessary per MT.
     // Suffix *R means radius, *T theta. 
@@ -74,35 +74,42 @@ void setToBasePos() {
     //
     float_T randMR = 20*testStat();
     float_T randMT = testStat();   
-    float_T randDR = 20*testStat();
-    float_T randDT = testStat();   
     //Using these RVs to construct the position variables of the MTs.
     float_T r_M    = sqrt(randMR); //Random Radius of MT;
     float_T t_M    = (startPsi - pi/2) + (envelopeM[1]-envelopeM[0])*randMT + envelopeM[0]; //Random Theta of MT;
-    float_T r_D    = sqrt(randDR); //Random Radius of MT;
-    float_T t_D    = (startPsi + pi/2) + (envelopeD[1]-envelopeD[0])*randDT + envelopeD[0]; //Random Theta of MT;
-
-    ////TODO: uncomment the above, get rid of this. This is just for testing, it
-    ////always spawns the MT at the same place. 
-    //float_T r_M    = 1;
-    //float_T t_M    = (startPsi - pi/2) + (envelopeM[1]-envelopeM[0])*0.25 + envelopeM[0]; //Random Theta of MT;
-    //float_T r_D    = 1;
-    //float_T t_D    = (startPsi + pi/2) + (envelopeD[1]-envelopeD[0])*0.5 + envelopeD[0]; //Random Theta of MT;
 
     //Assigning the positions. 
     MT_Pos_M[i][0] = basePosM[0]+ r_M*cos(t_M);
     MT_Pos_M[i][1] = basePosM[1]+ r_M*sin(t_M);
+
+    //Growing or Shrinking?
+    MT_Growing_M[i] = true;
+    MT_GrowthVel_M[i] = Vg;
+
+    //Made Contact?
+    MT_Contact_M[i] = 0;
+  }
+  for (unsigned i = 0; i < MT_numb_D; ++i) {
+    //MTs:
+    //Constructing the 4 random numbers necessary per MT.
+    // Suffix *R means radius, *T theta. 
+    // Suffix *M* means mother, *D* means daughter.
+    //
+    float_T randDR = 20*testStat();
+    float_T randDT = testStat();   
+    //Using these RVs to construct the position variables of the MTs.
+    float_T r_D    = sqrt(randDR); //Random Radius of MT;
+    float_T t_D    = (startPsi + pi/2) + (envelopeD[1]-envelopeD[0])*randDT + envelopeD[0]; //Random Theta of MT;
+
+    //Assigning the positions. 
     MT_Pos_D[i][0] = basePosD[0]+ r_D*cos(t_D);
     MT_Pos_D[i][1] = basePosD[1]+ r_D*sin(t_D);
 
     //Growing or Shrinking?
-    MT_Growing_M[i] = true;
     MT_Growing_D[i] = true;
-    MT_GrowthVel_M[i] = Vg;
     MT_GrowthVel_D[i] = Vg;
 
     //Made Contact?
-    MT_Contact_M[i] = 0;
     MT_Contact_D[i] = 0;
   }
   for (size_t i = 0; i < numberContactWindows; i++)
