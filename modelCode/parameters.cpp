@@ -31,8 +31,17 @@ const float_T Duration = 8;         //duration in minutes
 const float_T Tau      = 1.0/4000.0; //time step in minutes
 
 // MT Parameters
-const unsigned MT_numb_M = 100; //# of MTs from the M centrosome.
-const unsigned MT_numb_D = 100; //# of MTs from the D centrosome.
+// TODO THIS IS REALLY BAD!!! THIS CODE NEEDS TO BE IMPROVED. ... but it should
+// work. In the meantime, until it gets really fixed, if you need to change
+// this, be careful you know what you're doing with pre-processor macros.
+#define MT_numb_M 100
+#define MT_numb_D 100
+// TODO We can't currently use the uncommented lines as there is no easy way to
+// dynamically define functions for printing things nicely if these numbers are
+// different, unless we use pre-processor macros. This is not acceptable, we
+// need to just use object encapsulation. 
+//const unsigned MT_numb_M = 100; //# of MTs from the M centrosome.
+//const unsigned MT_numb_D = 100; //# of MTs from the D centrosome.
 vec_T MT_Pos_M[MT_numb_M];
 vec_T MT_Pos_D[MT_numb_D];
 bool MT_Growing_M[MT_numb_M];

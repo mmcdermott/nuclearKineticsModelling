@@ -50,6 +50,10 @@ ostream& operator<<(ostream& out, const vec_T (&rhs)[MT_numb_M]) {
   }
   return out;
 }
+// TODO THIS IS REALLY BAD!!! THIS CODE NEEDS TO BE IMPROVED. ... but it should
+// work. In the meantime, until it gets really fixed, if you need to change
+// this, be careful you know what you're doing with pre-processor macros.
+#if MT_numb_M != MT_numb_D
 ostream& operator<<(ostream& out, const vec_T (&rhs)[MT_numb_D]) {
   /* operator<<(ostream, vec_T[MT_numb_D]): A wrapper to write an array of vectors
    *   to an output stream.
@@ -72,6 +76,7 @@ ostream& operator<<(ostream& out, const vec_T (&rhs)[MT_numb_D]) {
   }
   return out;
 }
+#endif
 
 ostream& operator<<(ostream& out, const float_T (&rhs)[MT_numb_M]) {
   /* operator<<(ostream, float_T[MT_numb_M]): A wrapper to write an array of floats
@@ -95,6 +100,10 @@ ostream& operator<<(ostream& out, const float_T (&rhs)[MT_numb_M]) {
   }
   return out;
 }
+// TODO THIS IS REALLY BAD!!! THIS CODE NEEDS TO BE IMPROVED. ... but it should
+// work. In the meantime, until it gets really fixed, if you need to change
+// this, be careful you know what you're doing with pre-processor macros.
+#if MT_numb_M != MT_numb_D
 ostream& operator<<(ostream& out, const float_T (&rhs)[MT_numb_D]) {
   /* operator<<(ostream, float_T[MT_numb_D]): A wrapper to write an array of floats
    *   to an output stream.
@@ -117,6 +126,7 @@ ostream& operator<<(ostream& out, const float_T (&rhs)[MT_numb_D]) {
   }
   return out;
 }
+#endif
 
 void writeData(const float_T t) {
   /* writeData: A function that writes all relevant data to the data file
@@ -175,7 +185,7 @@ void mtForceCalcM(const float_T forceMag = F_MT)
     //We need to search to see what multiplier we should assign, which requires
     //knowing the true cartesian angle of the vector. 
     //3D WARNING: This section would have to update when changing to 3d.
-    float_T angle = atan2(MT_Pos_M[i][1],MT_pos_M[i][0]);
+    float_T angle = atan2(MT_Pos_M[i][1],MT_Pos_M[i][0]);
     if (angle < 0) angle += 2*pi;
 
     //Now we find the multiplier: 
@@ -216,7 +226,7 @@ void mtForceCalcD(const float_T forceMag = F_MT)
     //We need to search to see what multiplier we should assign, which requires
     //knowing the true cartesian angle of the vector. 
     //3D WARNING: This section would have to update when changing to 3d.
-    float_T angle = atan2(MT_Pos_D[i][1],MT_pos_D[i][0]);
+    float_T angle = atan2(MT_Pos_D[i][1],MT_Pos_D[i][0]);
     if (angle < 0) angle += 2*pi;
 
     //Now we find the multiplier: 
