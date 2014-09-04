@@ -35,7 +35,7 @@ const float_T Tau      = 1.0/4000.0; //time step in minutes
 // work. In the meantime, until it gets really fixed, if you need to change
 // this, be careful you know what you're doing with pre-processor macros.
 #define MT_numb_M 100
-#define MT_numb_D 100
+#define MT_numb_D 10
 // TODO We can't currently use the uncommented lines as there is no easy way to
 // dynamically define functions for printing things nicely if these numbers are
 // different, unless we use pre-processor macros. This is not acceptable, we

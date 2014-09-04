@@ -70,8 +70,8 @@ for i = 1 : step : length(DATA)
     MT_xm = (MT_pos_M(1:2:length(MT_pos_M)))';
     MT_ym = (MT_pos_M(2:2:length(MT_pos_M)))';
     MT_pos_D = data(start_D:end_D);
-    MT_xd = (MT_pos_D(1:2:length(MT_pos_M)))';
-    MT_yd = (MT_pos_D(2:2:length(MT_pos_M)))';
+    MT_xd = (MT_pos_D(1:2:length(MT_pos_D)))';
+    MT_yd = (MT_pos_D(2:2:length(MT_pos_D)))';
     
     MT_posXm = [xP_m.*ones(mt_numb_m,1) MT_xm]';
     MT_posYm = [yP_m.*ones(mt_numb_m,1) MT_ym]';
