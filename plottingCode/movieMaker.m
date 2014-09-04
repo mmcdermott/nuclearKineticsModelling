@@ -42,9 +42,9 @@ thetaOld  = 0;
 time = DATA(:,1);
 
 start_M = 5;
-end_M = start_M + 2*mt_numb - 1;
+end_M = start_M + 2*mt_numb_m - 1;
 start_D = end_M + 1;
-end_D = start_D + 2*mt_numb - 1;
+end_D = start_D + 2*mt_numb_d - 1;
 
 startBasePosM = end_D + 10;
 endBasePosM   = startBasePosM + 1;
@@ -73,10 +73,10 @@ for i = 1 : step : length(DATA)
     MT_xd = (MT_pos_D(1:2:length(MT_pos_M)))';
     MT_yd = (MT_pos_D(2:2:length(MT_pos_M)))';
     
-    MT_posXm = [xP_m.*ones(mt_numb,1) MT_xm]';
-    MT_posYm = [yP_m.*ones(mt_numb,1) MT_ym]';
-    MT_posXd = [xP_d.*ones(mt_numb,1) MT_xd]';
-    MT_posYd = [yP_d.*ones(mt_numb,1) MT_yd]';
+    MT_posXm = [xP_m.*ones(mt_numb_m,1) MT_xm]';
+    MT_posYm = [yP_m.*ones(mt_numb_m,1) MT_ym]';
+    MT_posXd = [xP_d.*ones(mt_numb_d,1) MT_xd]';
+    MT_posYd = [yP_d.*ones(mt_numb_d,1) MT_yd]';
     
     startBasePosM = end_D + 10;
     endBasePosM   = startBasePosM + 1;
@@ -85,10 +85,10 @@ for i = 1 : step : length(DATA)
     basePosM      = data(startBasePosM:endBasePosM);
     basePosD      = data(startBasePosD:endBasePosD);
     
-    MT_posXm = [basePosM(1).*ones(mt_numb,1) MT_xm]';
-    MT_posYm = [basePosM(2).*ones(mt_numb,1) MT_ym]';
-    MT_posXd = [basePosD(1).*ones(mt_numb,1) MT_xd]';
-    MT_posYd = [basePosD(2).*ones(mt_numb,1) MT_yd]';
+    MT_posXm = [basePosM(1).*ones(mt_numb_m,1) MT_xm]';
+    MT_posYm = [basePosM(2).*ones(mt_numb_m,1) MT_ym]';
+    MT_posXd = [basePosD(1).*ones(mt_numb_d,1) MT_xd]';
+    MT_posYd = [basePosD(2).*ones(mt_numb_d,1) MT_yd]';
 
     cla;
     hold on;

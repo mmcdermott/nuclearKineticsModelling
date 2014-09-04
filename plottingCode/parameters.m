@@ -10,15 +10,8 @@ else
     dataFileFull = [dataDir dataFile dataFileSuffix];
 end
 
-%  Parameters from C++:
+% Grabbing Parameters from Output:
 
-% mt_numb  = 1;        %number of MTs to be considered
-% R1_max   = 50;        %Embryo width in mum
-% R2_max   = 30;        %Embryo length in mum
-% Prad     = 5;         %Pronucleous radius
-% 
-% Duration       = 10;     % duration in minutes
-% Tau            = 1/4000; % time step in minutes
 modelParams = csvread(dataFileFull, 0,0, [0,0, 0,12]);
 F_MT = modelParams(1);
 contact_length = modelParams(2);
@@ -34,14 +27,15 @@ startX = modelParams(11);
 startY = modelParams(12);
 startPsi = modelParams(13);
 
-PlottingParams = csvread(dataFileFull, 1, 0, [1,0, 1,5]);
+PlottingParams = csvread(dataFileFull, 1, 0, [1,0, 1,6]);
 
-mt_numb  = PlottingParams(1);
-R1_max   = PlottingParams(2);
-R2_max   = PlottingParams(3);
-Prad     = PlottingParams(4);
-Duration = PlottingParams(5);
-Tau      = PlottingParams(6);
+mt_numb_m = PlottingParams(1);
+mt_numb_d = PlottingParams(2);
+R1_max    = PlottingParams(3);
+R2_max    = PlottingParams(4);
+Prad      = PlottingParams(5);
+Duration  = PlottingParams(6);
+Tau       = PlottingParams(7);
 
 numRegions = csvread(dataFileFull, 2, 0, [2,0, 2,0]);
 regionAngles = csvread(dataFileFull, 3, 0, [3,0, 3,numRegions]);
