@@ -5,7 +5,13 @@ figpath = ['figs'];
 
 run clean_fig_data_folder
 
-%figure('visible','off');
+if (exist('visible', 'var') == 0)
+  visible = false;
+end
+
+if (~visible)
+  figure('visible','off');
+end
 hold on;
 
 axis equal
@@ -51,7 +57,9 @@ endBasePosM   = startBasePosM + 1;
 startBasePosD = endBasePosM + 1;
 endBasePosD   = startBasePosD + 1;
 
-step = 100;
+if (exist('step', 'var') == 0)
+    step = 100;
+end
 for i = 1 : step : length(DATA)
     data = DATA(i,:);
     t = data(1);

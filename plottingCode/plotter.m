@@ -10,8 +10,12 @@ end
 if (exist('ratio','var') == 0)
     ratio = true;
 end
-dataBaseDir = '../data/rotVsBandPostFix/notSpringed/';
-figsBaseDir = '../../figures/rotVsBandPostFix/notSpringed/';
+if (exist('dataBaseDir', 'var') == 0)
+    dataBaseDir = '../data/rotVsBandPostFix/notSpringed/';
+end
+if (exist('figsBaseDir', 'var') == 0)
+    figsBaseDir = '../../figures/rotVsBandPostFix/notSpringed/';
+end
 if (motherEnvelope == pi)
     envDir = 'mEnvP/';
 elseif (motherEnvelope == 2*pi)

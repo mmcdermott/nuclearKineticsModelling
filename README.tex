@@ -54,7 +54,43 @@
   and so on and so forth). If given as \texttt{all}, it will write data for
   every timestep in the result file, in sequence, for each model run. \\
   \textbf{To View: } There are a variety of matlab scripts in the
-  \texttt{plottingCode} folder to visualize the results. Of particular note are
+  \texttt{plottingCode} folder to visualize the results. Several key scripts are
+  outlined below. All are run by setting, either in the matlab console or via
+  the matlab \texttt{-r} command line flag, the variables \texttt{dataDir} and
+  \texttt{dataFile} to the directory containing the data file and the name of
+  the data file (without the extension), respectively, then running the script
+  (to run the script, either type \texttt{run [SCRIPT NAME].m} in the matlab
+  console, or at the end of the variable declarations in the \texttt{-r} command
+  line flag).
+  \begin{description}
+    \item[\texttt{positionHeatRotationRose.m}] This script produces a heat map
+      of the pronucleus' final position and a rose plot (angular histogram) of
+      the pronucleus' final orientation. In addition to specifying the data
+      directory and the data file via \texttt{matlab} variables \texttt{dataDir}
+      and \texttt{dataFile} in this script, you can also specify the number of
+      runs for which the simulation was computed. Note that this script
+      \emph{only} works & is meaningful for many simulations of the model that
+      only output the default amount of data each iteration (i.e. run with
+      \texttt{./mtKineticModel [NUMBER OF RUNS] [OUTPUT FILENAME]}, not 
+      \texttt{./mtKineticModel [NUMBER OF RUNS] [OUTPUT FILENAME] temp} or 
+      \texttt{./mtKineticModel [NUMBER OF RUNS] [OUTPUT FILENAME] all}.
+    \item[\texttt{movieMaker.m}] This script produces a visualization of an
+      individual run, by animating the motion of the pronucleus and MTs. It also
+      writes these images to the \texttt{plottingCode/figs/} folder, which can
+      then be translated into a movie using other utilities. Note that it also
+      erases this \texttt{figs/} folder prior to running, so don't expect those
+      images to stay around if you are running this script multiple times. In
+      addition to \texttt{dataDir} and \texttt{dataFile}, you can also set the
+      variables \texttt{visible} and \texttt{step} to control whether or not the
+      frames are shown on the screen while it is being rendered and what the
+      step size is between frames, respectively. Note that this script only
+      works with single simulation runs that output all their data (i.e. run
+      with \texttt{./mtKineticModel [NUMBER OF RUNS] [OUTPUT FILENAME] all}).
+  \end{description}
+  
+  
+  
+  Of particular note are
   the histogram scripts, \texttt{positionRotationHist.m} and
   \texttt{positionRotationHistCompare.m}, the single-run visualization tool,
   \texttt{readData.m}, and the movie-frame making scripts
