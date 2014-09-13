@@ -14,6 +14,7 @@ if (exist('numRuns','var') == 0)
     numRuns = 100;
 end
 
+%TODO: this shouldn't be dependent on how often we write temporary data.
 numDataPoints = Duration*2;
 
 csvrange = [rowStart colStart rowStart+numDataPoints*numRuns-1 colStart+7];

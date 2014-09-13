@@ -86,20 +86,32 @@
       step size is between frames, respectively. Note that this script only
       works with single simulation runs that output all their data (i.e. run
       with \texttt{./mtKineticModel [NUMBER OF RUNS] [OUTPUT FILENAME] all}).
+    \item[\texttt{centrosomePos.m}] This script produces several visualization
+      of the motion of the centrosomes across time over many runs. In order to
+      run this script, you additionally need to set the \texttt{numRuns}
+      variable, cataloging the number of times you ran the simulation. Note that
+      this script only works with runs that write data every $30$ seconds, which
+      is what is produced with the \texttt{temp} data suffix. So, the data must
+      be produced via
+      \texttt{./mtKineticModel [NUMBER OF RUNS] [OUTPUT FILENAME] temp}.
+    \item[\texttt{plotter.m}] This script produces plots examining effects
+      across a large experiment produced via the \texttt{experiment.sh} script.
+      For this script, rather than specifying the \texttt{dataDir} and
+      \texttt{dataFile} variables, you must specify the \texttt{dataBaseDir},
+      which is a directory containing all of the output from the
+      \texttt{experiment.sh} script, named according to the same convention used
+      by \texttt{experiment.sh}, and \texttt{figsBaseDir}, which specifies the
+      base directory to which the resulting plots should be written. This
+      script does not show you the plots in real time, but rather writes them to
+      the \texttt{figsBaseDir} directory (which should exist prior to starting
+      the script).
   \end{description}
-  
-  
-  
-  Of particular note are
-  the histogram scripts, \texttt{positionRotationHist.m} and
-  \texttt{positionRotationHistCompare.m}, the single-run visualization tool,
-  \texttt{readData.m}, and the movie-frame making scripts
-  \texttt{movieMaker*.m}. All of these scripts are run with the following basic
-  premise: Open \texttt{MATLAB}, set values \texttt{dataDir} and
-  \texttt{dataFile} \textit{(and/or \texttt{dataFile2})} in the \texttt{MATLAB}
-  console, then run the script. \texttt{dataDir} stands for the directory (as a
-  sub-directory of \texttt{nuclearKineticsModelling/data/}) and
-  \texttt{dataFile} stands for the dataFile in question. 
+  Again, all of these scripts are run with the following basic premise: Open
+  \texttt{MATLAB}, set values \texttt{dataDir} and \texttt{dataFile}
+  \textit{(and/or \texttt{dataFile2})} in the \texttt{MATLAB} console, then run
+  the script. \texttt{dataDir} stands for the directory (as a sub-directory of
+  \texttt{nuclearKineticsModelling/data/}) and \texttt{dataFile} stands for the
+  dataFile in question, with no extension.
   \subsection{Basic Usage:}
   For basic usage, the only additional step beyond simple compilation and
   running is parameter modification. Here is a short description of some of the
